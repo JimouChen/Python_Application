@@ -21,7 +21,8 @@ def get_file_content(filePath):
         return fp.read()
 
 
-image = get_file_content('car.jpg')
+# 注意图片的大小有要求的
+image = get_file_content('image/car1.jpg')
 
 """ 调用车牌识别 """
 client.licensePlate(image)
@@ -31,8 +32,7 @@ options = {"multi_detect": "true"}
 
 """ 带参数调用车牌识别 """
 res = client.licensePlate(image, options)
-print(res)
-
+print(res, '\n')
 
 print('车牌号：', res['words_result'][0]['number'])
 print('颜色：', res['words_result'][0]['color'])
