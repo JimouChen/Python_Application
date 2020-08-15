@@ -15,3 +15,12 @@ def home(request):
         'users': users
     }
     return render(request, "index.html", context=show_content)
+
+
+def get_phone(request):
+    phone = '1232323'
+    return HttpResponse(phone)
+
+
+def get_name(request, name):
+    return HttpResponse(name)
