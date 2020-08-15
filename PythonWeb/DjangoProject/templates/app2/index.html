@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>app02 page</title>
+</head>
+<body>
+<table border="1" cellspacing="0" width="80%">
+    {% for user in users %}
+        <tr>
+            <td>{{ user.username }}</td>
+        </tr>
+
+    {% endfor %}
+
+</table>
+</body>
+</html>

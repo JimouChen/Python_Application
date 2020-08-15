@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tag page</title>
+</head>
+<body>
+
+{% if 2 < 3 %}
+    <p>yes</p>
+{% else %}
+    <p>no</p>
+{% endif %}
+<center>
+    {% for i in nums %}
+        <li>
+        {{ i }}
+        </li>
+
+    {% endfor %}
+</center>
+{#反向遍历#}
+  {% for i in nums reversed%}
+        <li>
+        {{ i }}
+        </li>
+
+    {% endfor %}
+</body>
+</html>

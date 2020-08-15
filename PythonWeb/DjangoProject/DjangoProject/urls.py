@@ -20,4 +20,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('App.urls')),  # 把子路由包含进来
+    path('app2/', include('App02.urls')),  # 把子路由包含进来
 ]
