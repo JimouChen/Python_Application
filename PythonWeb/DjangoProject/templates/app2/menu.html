@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>菜单页</title>
+</head>
+<body>
+    <ul>
+        <li><a href="{% url 'App02:login2_view' %}">登录页</a> </li>
+        <li><a href="{% url 'App02:home' %}">首页</a> </li>
+        <li><a href="{% url 'App:resp' %}">响应</a> </li>
+
+    </ul>
+<h3>
+    <a href="{% url 'App:red' %}">重定向</a>
+</h3>
+</body>
+</html>

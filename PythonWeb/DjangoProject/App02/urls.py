@@ -15,7 +15,12 @@ urlpatterns = [
     path('tag/', views.handle_tag, name='tag'),
     # 渲染登陆页面
     path('', views.login_view, name='login_view'),
+    # 渲染登陆页面
+    path('lg/', views.login2_view, name='login2_view'),
     # get方式登录
-    path('login/', views.handle_login, name='login')
-
+    path('login/', views.handle_login, name='login'),
+    # post方式登录
+    path('post_login/', views.handle_post_login, name='post_login'),
+    # 菜单，在html使用反向引用
+    path('url/', views.handle_url, name='url/')
 ]
