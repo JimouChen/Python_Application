@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>查询</title>
+</head>
+<body>
+{% for user in users %}
+    <li>{{ user.username }} --- {{ user.password }}</li>
+{% endfor %}
+</body>
+</html>
