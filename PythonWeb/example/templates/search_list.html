@@ -8,5 +8,11 @@
 {% for user in users %}
     <li>{{ user.username }} --- {{ user.password }}</li>
 {% endfor %}
+
+
+{% for user in u %}
+    <li>{{ user.uid }}--{{ user.username }} --- {{ user.password }}</li>
+
+{% endfor %}
 </body>
 </html>

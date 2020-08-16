@@ -41,7 +41,17 @@ def handle_data(request):
     return HttpResponse('update ok!')
 
 
+# 查询
 def find_data(request):
     # 查询所有的
     users = User.objects.all()
+    # 条件查询，用filter,里面写查询条件
+    u = User.objects.filter(uid=2)
+    # 如果是uid>=2,
+    u = User.objects.filter(uid__gt=2)
+    # 如果是2<=uid<=8
+    u = User.objects.filter(uid__gt=2).filter(uid__lt=8)
+
+    '''像all和filter返回的都是QuerySet，可以遍历的集合'''
+
     return render(request, 'search_list.html', locals())
