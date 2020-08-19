@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Show Page</title>
+</head>
+<body>
+<center>
+
+    <h2>用户信息</h2><br>
+
+    <table border="1", cellspacing="0", width="400px">
+        <tr>
+            <th>编号</th>
+            <th>id号</th>
+            <th>用户名</th>
+            <th>密码</th>
+        </tr>
+        {% for user in users %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ user.uid }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.password }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</center>
+
+
+
+</body>
+</html>
