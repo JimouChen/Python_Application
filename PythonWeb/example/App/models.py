@@ -1,6 +1,5 @@
 from django.db import models
 
-
 # Create your models here.
 from django.db.models import Manager
 
@@ -22,6 +21,19 @@ class User(models.Model):
         db_table = 'user'  # 表名
         ordering = ['username']  # 按名字排序
 
+
 # 扩展管理器功能
 class MyManager(Manager):
     pass
+
+
+class Movie(models.Model):
+    mid = models.AutoField(primary_key=True)
+    mname = models.CharField(unique=True, max_length=100)
+    mdesc = models.TextField(blank=True, null=True)
+    mimg = models.CharField(max_length=120)
+    mlink = models.CharField(max_length=200)
+
+    class Meta:
+        managed = False
+        db_table = 'movie'

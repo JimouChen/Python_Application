@@ -20,4 +20,8 @@ urlpatterns = [
     path('login/', views.handle_login, name='login'),
     # 显示用户信息
     path('show/', views.show_msg, name='show'),
+    # 电影显示
+    path('movie/', views.show_movie, name='movie'),
+    # django自带的分页功能
+    path('movie_page/', views.show_movie_page, name='movie_page'),
 ]

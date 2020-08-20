@@ -1,8 +1,9 @@
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse
 from django.shortcuts import render
 
 # Create your views here.
-from App.models import User
+from App.models import User, Movie
 
 
 def home(request):
@@ -111,3 +112,54 @@ def show_msg(request):
     users = User.objects.all()
 
     return render(request, 'app01/show.html', locals())
+
+
+# 展示并且有分页功能
+def page(num, size=20):
+    # 接收当前页码数
+    num = int(num)
+    # 总记录数
+    total_pages = Movie.objects.count()
+    # 最大页码
+    max_num = total_pages // size + 1
+    # 判断页码越界
+    if num < 1:
+        num = 1
+    if num > max_num:
+        num = max_num
+    # 计算出每页显示的记录
+    page_show = Movie.objects.all()[size * (num - 1): num * size]
+
+    return page_show, num
+
+
+# 原生分页
+def show_movie(request):
+    # 接收请求参数num,获取不到就取值1返回
+    num = request.GET.get('num', 1)
+    # 处理分页
+    movie, n = page(num)
+    # 上一页和下一页
+    last_page = n - 1
+    next_page = n + 1
+
+    # movie = Movie.objects.all()
+    return render(request, 'index01.html', locals())
+
+
+# Django分页
+def show_movie_page(request):
+    num = int(request.GET.get('num', 1))
+    movie = Movie.objects.all()
+    # 创建分页器对象
+    pager = Paginator(movie, 20)
+    # 获取当前页的数据
+    try:
+        page_data = pager.page(num)
+    except PageNotAnInteger:
+        # 返回第一页
+        page_data = pager.page(1)
+    except EmptyPage:
+        # 返回最后一页
+        page_data = pager.page(pager.num_pages)
+    return render(request, 'index02.html', locals())
