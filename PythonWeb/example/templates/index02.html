@@ -128,19 +128,28 @@
         {% if page_data.has_previous %}
             <a href="/movie_page/?num={{ page_data.previous_page_number }}">上一页</a>
         {% endif %}
+{#加粗当前的页码,且有颜色#}
+        {% for n in page_list %}
+            {% if n == num %}
+                <a href="/movie_page/?num={{ n }}" style="font-size: 28px; color: aqua">{{ n }}</a>&emsp;
+            {% else %}
+                <a href="/movie_page/?num={{ n }}">{{ n }}</a>&emsp;
+            {% endif %}
+        {% endfor %}
 
         {% if page_data.has_next %}
             <a href="/movie_page/?num={{ page_data.next_page_number }}">下一页</a>
         {% endif %}
         <a href="/movie_page/?num=1">回到首页</a>
+        &emsp;<a href="/movie_page/?num={{ pager.num_pages }}">末页</a>
     </p>
 
-
-    <p>
-    {% for n in pager.page_range %}
-        <a href="/movie_page/?num={{ n }}">{{ n }}</a>
-    {% endfor %}
-    </p>
+{#显示所有页数#}
+{#    <p>#}
+{#    {% for n in pager.page_range %}#}
+{#        <a href="/movie_page/?num={{ n }}">{{ n }}</a>#}
+{#    {% endfor %}#}
+{#    </p>#}
 
 </div>
 

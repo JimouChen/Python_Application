@@ -162,4 +162,25 @@ def show_movie_page(request):
     except EmptyPage:
         # 返回最后一页
         page_data = pager.page(pager.num_pages)
+
+    '''实现翻页功能'''
+    # 每页开始的页码,以每5页作为半个区间,展示10页，num作为当前页
+    begin_page = num - 5
+
+    if begin_page < 1:
+        begin_page = 1
+
+    # 每页结束的页码
+    end_page = num + 5
+    if end_page > pager.num_pages:
+        end_page = pager.num_pages
+
+    if end_page <= 10:
+        begin_page = 1
+        end_page = num + 9
+    else:
+        begin_page = end_page - 9
+
+    page_list = range(begin_page, end_page + 1)
+
     return render(request, 'index02.html', locals())
