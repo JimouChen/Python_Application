@@ -5,6 +5,8 @@
 import scrapy
 from bs4 import BeautifulSoup
 
+from testScrapy.items import TestscrapyItem
+
 
 class CommentSpider(scrapy.Spider):
     name = 'comment_spider'
@@ -21,7 +23,10 @@ class CommentSpider(scrapy.Spider):
         print('======================{}======================'.format(self.page_num))
         for node in nodes:
             comment = node.find('span').text
-            print(comment, end='\n\n')
+            # 保存
+            item = TestscrapyItem(page_num = self.page_num, comment=comment)
+            yield item
+            # print(comment, end='\n\n')
         self.page_num += 1
 
         # 其他页链接
@@ -29,3 +34,5 @@ class CommentSpider(scrapy.Spider):
         if self.page_num <= 28:
             url = 'https://book.douban.com/subject/35092383/annotation?sort=rank&start=' + str(num)
             yield scrapy.Request(url, callback=self.parse)
+        #
+        # print('保存完毕')
