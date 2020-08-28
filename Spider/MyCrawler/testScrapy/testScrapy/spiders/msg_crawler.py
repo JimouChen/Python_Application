@@ -4,6 +4,7 @@
 """
 import scrapy
 from bs4 import BeautifulSoup
+from testScrapy.items import TestscrapyItem
 
 
 class MassageSpider(scrapy.Spider):
@@ -28,8 +29,10 @@ class MassageSpider(scrapy.Spider):
         for node in nodes:
             word = node.find('span', {'class': 'text'}).text
             people = node.find('small', {'class': 'author'}).text
-            print('{0:<4}: {1:<20} said: {2:<20}'.format(self.page_num, people, word))
-
+            item = TestscrapyItem(page=self.page_num, name=people, word=word)
+            yield item
+            # print('{0:<4}: {1:<20} said: {2:<20}'.format(self.page_num, people, word))
+        print('==================ok================')
         self.page_num += 1
         try:
             url = soup.find('li', {'class': 'next'}).a['href']
