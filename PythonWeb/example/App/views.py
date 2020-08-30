@@ -103,7 +103,8 @@ def handle_login(request):
         # 判断用户名和密码在不在数据库里面
         c = User.objects.filter(username=name, password=psw).count()
         if c == 1:
-            return HttpResponse('登陆成功')
+            # return HttpResponse('登陆成功')
+            return render(request, 'app01/login_success.html')
         # 其他情况
         return HttpResponse('登录失败')
 

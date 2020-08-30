@@ -24,4 +24,5 @@ urlpatterns = [
     path('movie/', views.show_movie, name='movie'),
     # django自带的分页功能
     path('movie_page/', views.show_movie_page, name='movie_page'),
+
 ]
