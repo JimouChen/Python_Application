@@ -4,7 +4,6 @@
 """
 import scrapy
 from bs4 import BeautifulSoup
-import requests
 from testScrapy.items import TestscrapyItem
 
 
@@ -46,6 +45,7 @@ class MassageSpider(scrapy.Spider):
         except Exception:
             print('所有页面爬取结束！')
 
+    # 获取作者链接细节描述
     def author_parse(self, response, **kwargs):
         soup = BeautifulSoup(response.body, 'html.parser')
         author = soup.find_all('div', {'class': 'author-details'})[0].find('h3').text
