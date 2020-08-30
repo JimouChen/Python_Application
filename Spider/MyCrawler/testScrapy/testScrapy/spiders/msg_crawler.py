@@ -4,35 +4,39 @@
 """
 import scrapy
 from bs4 import BeautifulSoup
+import requests
 from testScrapy.items import TestscrapyItem
 
 
 class MassageSpider(scrapy.Spider):
     name = 'msg_crawl'  # 爬虫的名字，一定要给
-    # start_urls = ['http://www.cae.cn/cae/html/main/col48/column_48_1.html']  # 起始的url
     start_urls = ['http://quotes.toscrape.com/page/1/']  # 起始的url
 
     page_num = 1
+    author_url = []
 
     # 对爬到的网页进行解析
     def parse(self, response, **kwargs):
         soup = BeautifulSoup(response.body, 'html.parser')
-        # nodes = soup.find_all('li', {'class': 'name_list'})
-        # i = 0
-        # for node in nodes:
-        #     i += 1
-        #     people_name = node.find('a').text
-        #     link = 'http://www.cae.cn/' + node.find('a')['href']
-        #     print('{}. {}: {}'.format(i, people_name, link))
-
         nodes = soup.find_all('div', {'class': 'quote'})
         for node in nodes:
             word = node.find('span', {'class': 'text'}).text
             people = node.find('small', {'class': 'author'}).text
-            item = TestscrapyItem(page=self.page_num, name=people, word=word)
+            tags = node.find_all('a', {'class': 'tag'})
+            tags_list = []
+            for i in range(len(tags)):
+                tags_list.append(tags[i].text)
+            # print('{} : '.format(self.page_num), tags_list)
+
+            # print('{} : '.format(self.page_num), author_link)
+            # 现在找到作者链接后，进去爬里面的数据信息
+            author_link = 'http://quotes.toscrape.com/' + node.find_all('span')[1].a['href']
+            yield response.follow(author_link, self.author_parse)
+            item = TestscrapyItem(page=self.page_num, name=people, word=word, tags=tags_list)
             yield item
-            # print('{0:<4}: {1:<20} said: {2:<20}'.format(self.page_num, people, word))
-        print('==================ok================')
+            # print('{0:<4}: {1:<20} said: {2:<20}\n{3}'.format(self.page_num, people, word, tags_list))
+
+        print('=================================='*2 + 'ok' + '=================================='*2)
         self.page_num += 1
         try:
             url = soup.find('li', {'class': 'next'}).a['href']
@@ -42,21 +46,11 @@ class MassageSpider(scrapy.Spider):
         except Exception:
             print('所有页面爬取结束！')
 
-    # def start_requests(self):
-    #     url = 'http://quotes.toscrape.com/'
-    #
-    #     tag = getattr(self, 'tag', None)
-    #     if tag is not None:
-    #         url = url + 'tag/' + tag
-    #     yield scrapy.Request(url, self.parse)
-    #
-    # def parse(self, response):
-    #     for quote in response.css('div.quote'):
-    #         yield {
-    #             'text': quote.css('span.text::text').get(),
-    #             'author': quote.css('small.author::text').get(),
-    #         }
-    #
-    #     next_page = response.css('li.next a::attr(href)').get()
-    #     if next_page is not None:
-    #         yield response.follow(next_page, self.parse)
+    def author_parse(self, response, **kwargs):
+        soup = BeautifulSoup(response.body, 'html.parser')
+        author = soup.find_all('div', {'class': 'author-details'})[0].find('h3').text
+        birthday = soup.find('span').text
+        bio = soup.find('div', {'class': 'author-description'}).text
+        item = TestscrapyItem(author=author, birthday=birthday, bio=bio)
+        yield item
+        # print('{}: {}\n{}\n{}\n'.format(self.page_num, author, birthday, bio))
