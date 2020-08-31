@@ -10,7 +10,7 @@ import imageio
 有形状的词云
 '''
 
-# 读入词云的现状图片
+# 读入词云的现状图片作为模板图片，一定要求白底的背景
 shape = imageio.imread('star.png')
 
 w = wordcloud.WordCloud(width=1000,
