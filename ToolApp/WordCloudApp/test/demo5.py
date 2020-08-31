@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import itchat
 
 '''
-获取微信好友签名词云
+获取微信好友签名词云，已失效
 '''
 # 跳出二维码，登录微信
 itchat.login()
