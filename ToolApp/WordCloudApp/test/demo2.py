@@ -10,7 +10,7 @@ with open(r'data.txt', 'r', encoding='utf-8') as f:
     text = f.read()
 
 text_list = jieba.lcut(text)
-text = ' '.join(text_list)
+text = ' '.join(text_list)  # 变成string
 w.generate(text)
 
 w.to_file('demo1.png')
