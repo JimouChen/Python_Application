@@ -17,6 +17,17 @@ def get_nearest_num(array: list):
     return array[index1], array[index2]
 
 
+def get_min_diff(array: list):
+    array.sort()
+    temp_list = []
+    for i in range(len(array) - 1):
+        diff = array[i + 1] - array[i]
+        temp_list.append(diff)
+
+    return min(temp_list)
+
+
 if __name__ == '__main__':
-    l = [21, 223, 2, 45, 11, 44, 56]
-    print(get_nearest_num(l))
+    test = [21, 223, 2, 45, 11, 44, 56]
+    print('最接近的两个数是:', get_nearest_num(test))
+    print('最接近的两个数的差是:', get_min_diff(test))

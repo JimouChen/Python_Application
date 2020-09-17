@@ -3,10 +3,12 @@
 # @Author  :  Jimou Chen
 """
 num = '1111'
-while True:
-    num += '1'
-    if int(num) % 2013 == 0:
-        n = len(num)
-        print(n)
-        break
+if __name__ == '__main__':
+
+    while True:
+        num += '1'
+        if int(num) % 2013 == 0:
+            print('至少需要{}个1'.format(len(num)))
+            break
+
 
