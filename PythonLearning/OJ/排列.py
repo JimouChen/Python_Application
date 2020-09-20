@@ -11,15 +11,19 @@ for c in range(0, n):
     for i in range(len(nums)):
         nums[i] = int(nums[i])
 
+    string = ''
     cb = permutations(nums, 4)
+    str_list = []
+    f = 0
     for each in cb:
         each = list(each)
-        j = 0
-        # if j
-        for j in range(6):
-            if j < 5:
-                print(each[j], end=' ')
-            elif j == 5:
-                print(each[j], end='\n')
 
-
+        for i in each:
+            print(i, end='')
+        f += 1
+        if f % 6 == 0:
+            print(end='\n')
+        else:
+            print(end=' ')
+    if c != n-1:
+        print()
