@@ -3,7 +3,7 @@
 # @Author  :  Jimou Chen
 """
 num, weight = map(int, input().split())
-group = []
+
 # 第一个下标的值设为0，方便
 w = [0]
 v = [0]
