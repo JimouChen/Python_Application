@@ -19,7 +19,6 @@ while True:
                     print('方程AX^2 + BX + C = 0有1个实根, x = %.2f' % x)
             else:
                 # a 不等于0的情况
-
                 delta = b ** 2 - 4 * a * c
                 if delta > 0:
                     x1 = (-b + (b ** 2 - 4 * a * c) ** 0.5) / (2 * a)
