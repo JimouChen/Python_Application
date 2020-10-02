@@ -12,8 +12,9 @@ def get_gray_code(n):
         code_list[1] = '1'
         return code_list
 
+    # 递归得到上一个长度的格雷码
     last_list = get_gray_code(n - 1)
-
+    # 给当前的格雷码上下两部分赋值
     for i in range(0, len(last_list)):
         code_list[i] = '0' + last_list[i]
         code_list[len(code_list) - i - 1] = '1' + last_list[i]
@@ -21,5 +22,5 @@ def get_gray_code(n):
     return code_list
 
 
-print(get_gray_code(3))
-print(get_gray_code(4))
+print('n = 3 时的格雷码是:\n', get_gray_code(3))
+print('n = 4 时的格雷码是:\n', get_gray_code(4))
