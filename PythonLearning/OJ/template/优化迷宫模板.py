@@ -24,7 +24,7 @@ def dfs(x, y, step):
         return
 
     '''顺时针试探'''
-    for i in range(0, 3):
+    for i in range(0, 4):
         tx = x + dx[i]
         ty = y + dy[i]
         if a[tx][ty] == 1 and flag[tx][ty] == 0:
