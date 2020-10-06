@@ -4,6 +4,7 @@
 """
 
 
+# 效果比dfs好
 class Point:
     def __init__(self, x, y, step):
         self.x = x
@@ -13,13 +14,13 @@ class Point:
 
 dx = [0, 1, 0, -1]
 dy = [1, 0, -1, 0]
-graph = [[0 for i in range(11)] for j in range(11)]
-flags = [[0 for i in range(11)] for j in range(11)]
-flag = 0
 
 while True:
     try:
+        graph = [[0 for i in range(15)] for j in range(15)]
+        flags = [[0 for i in range(15)] for j in range(15)]
         queue = []
+        flag = 0
         n, m, t = map(int, input().split())
         if n == 0 or m == 0:
             break
@@ -41,29 +42,31 @@ while True:
         queue.append(start_point)
         flags[start_x][start_y] = 1
 
-        while len(queue) != 0:
+        while len(queue):
             x = queue[0].x
             y = queue[0].y
-            if x == end_x and y == end_y:
+            if x == end_x and y == end_y and queue[0].step < t:
                 flag = 1
-                print('step = ', queue[0].step)
                 break
 
-            for k in range(0, 4):
-                tx = x + dx[k]
-                ty = y + dy[k]
-                if graph[tx][ty] == '.' and flags[tx][ty] == 0:
-                    # 入队
-                    temp = Point(tx, ty, queue[0].step + 1)
-                    queue.append(temp)
+            for i in range(0, 4):
+                tx = x + dx[i]
+                ty = y + dy[i]
+
+                if flags[tx][ty] == 0 and graph[tx][ty] == '.':
                     flags[tx][ty] = 1
+                    queue.append(Point(tx, ty, queue[0].step + 1))
 
             queue.pop(0)
 
-        if flag == 0:
-            print('no ans')
+        if flag == 1:
+            print('Oh Yes!!!')
+        else:
+            print('Tragedy!!!')
+
     except:
         break
+
 '''
 4 4 10
 ....

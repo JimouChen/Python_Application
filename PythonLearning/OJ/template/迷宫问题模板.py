@@ -66,7 +66,6 @@ if __name__ == '__main__':
     dfs(start_x, start_y, 0)
 
     print(min_dis)
-
 '''
 5 4
 1 1 2 1
@@ -77,3 +76,4 @@ if __name__ == '__main__':
 0 0
 3 2
 '''
+
