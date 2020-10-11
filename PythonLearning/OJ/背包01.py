@@ -28,3 +28,12 @@ for i in range(1, num + 1):
             dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - w[i]] + v[i])
 
 print(dp[num][weight])
+print(dp)
+'''
+3 5
+2 3
+3 5
+4 7
+
+8
+'''
