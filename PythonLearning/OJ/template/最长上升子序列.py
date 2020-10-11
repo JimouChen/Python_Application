@@ -3,7 +3,7 @@
 # @Author  :  Jimou Chen
 
 """
-dp = [0 for i in  range(100)]
+dp = [0 for i in range(100)]
 n = int(input())
 nums = list(map(int, input().split()))
 for i in range(0, n):
@@ -11,7 +11,6 @@ for i in range(0, n):
     for j in range(0, i):
         if nums[j] < nums[i]:
             dp[i] = max(dp[i], dp[j] + 1)
-
 
 print(max(dp))
 

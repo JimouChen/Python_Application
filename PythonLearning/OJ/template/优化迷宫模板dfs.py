@@ -47,7 +47,6 @@ if __name__ == '__main__':
 
     # 输入起点和终点坐标
     start_x, start_y = map(int, input().split())
-    # global p, q
     p, q = map(int, input().split())
 
     # 从起点开始，所以起点设置为已经访问状态
