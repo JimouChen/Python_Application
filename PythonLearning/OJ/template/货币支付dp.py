@@ -1,8 +1,12 @@
+"""
+# @Time    :  2020/10/18
+# @Author  :  Jimou Chen
+"""
 
 dp = [0 for i in range(100)]
 dp[0] = 0
 if __name__ == '__main__':
-
+    # 货币之类和金额
     n, money = map(int, input().split())
     class_list = list(map(int, input().split()))
 
@@ -15,4 +19,3 @@ if __name__ == '__main__':
         dp[i] = cost
 
     print(dp[money])
-
