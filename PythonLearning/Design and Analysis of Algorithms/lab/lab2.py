@@ -1,5 +1,5 @@
 """
-# @Time    :  2020/10/15
+# @Time    :  2020/10/21
 # @Author  :  Jimou Chen
 """
 '''在指定范围a到b内折半查找，减治法'''
@@ -8,10 +8,10 @@ temp = []
 
 def find_range(array: list, a, b, low, high):
     mid = (low + high) // 2
-    # 右边找
+    # 左边找
     if array[mid] > b:
         find_range(array, a, b, low, mid)
-    # 左边找
+    # 右边找
     if array[mid] < a:
         find_range(array, a, b, mid, high)
     # 夹在中间的情况
@@ -27,11 +27,10 @@ def find_range(array: list, a, b, low, high):
             # print(array[j], end=' ')
             temp.append(array[j])
             j += 1
-    # print()
 
 
 if __name__ == '__main__':
-    test = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    find_range(test, 3, 7, 0, len(test))
+    test = [2, 5, 8, 13, 17, 25, 35, 36, 47, 50]
+    find_range(test, 16, 36, 0, len(test))
     temp.sort()
     print(temp)
