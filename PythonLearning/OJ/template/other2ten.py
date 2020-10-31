@@ -10,3 +10,4 @@ print(int('0x'+n,16))
 https://www.cnblogs.com/aaronthon/p/9446048.html
 '''
 
+
