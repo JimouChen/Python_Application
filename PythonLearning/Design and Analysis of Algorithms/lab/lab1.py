@@ -58,7 +58,7 @@ def merge_sort(low, high):
 
 
 if __name__ == '__main__':
-    # test = [3, 5, 2, 4, 6]
+    # array = [3, 5, 2, 4, 6]
     # 输入
     num = list(map(int, input().split()))
     merge_sort(0, len(num) - 1)
