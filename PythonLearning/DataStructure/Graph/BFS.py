@@ -4,10 +4,10 @@
 """
 
 
-# 广搜
+# 广搜，start是起点
 def bfs(graph, start):
     queue = [start]  # 先把起点入队列
-    visited = set()  # 访问国的点加入
+    visited = set()  # 已经访问过的点加入
     visited.add(start)
 
     while len(queue):

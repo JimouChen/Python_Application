@@ -10,8 +10,9 @@ flag = [[0 for i in range(100)] for j in range(100)]
 # 方向数组
 dx = [0, 1, 0, -1]
 dy = [1, 0, -1, 0]
-
+# import math
 # 设最短路径长度
+# min_dis = math.inf
 min_dis = 99999999
 
 

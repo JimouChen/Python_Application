@@ -35,6 +35,7 @@ if __name__ == '__main__':
     while len(queue) != 0:
         x = queue[0].x
         y = queue[0].y
+
         if x == end_x and y == end_y:
             flag = 1
             print('step = ', queue[0].step)
