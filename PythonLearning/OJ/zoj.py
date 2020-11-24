@@ -21,6 +21,5 @@ while True:
                 print(j.pop(), end='')
 
         print()
-
     except:
         break
