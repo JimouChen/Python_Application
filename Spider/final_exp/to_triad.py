@@ -29,8 +29,9 @@ def next_move(triad: list, init_input: str):
 
 
 if __name__ == '__main__':
-    triad_list = handle_file('test.txt')
-    print(triad_list)
-    test = '0919293949596979891477866646260600102030405060708012720323436383'
-    res = next_move(triad_list, test)
+    triad_list = handle_file('word_count.txt')
+    # print(len(triad_list))
+
+    input_init = '8979695949392919094717866646260600102030405060708012420323436383'
+    res = next_move(triad_list, input_init)
     print(res)
