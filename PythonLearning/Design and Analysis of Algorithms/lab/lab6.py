@@ -1,19 +1,20 @@
 class Node:
-    def __init__(self, pos, val, weight):
+    def __init__(self, pos, val, weight, path):
         self.pos = pos
         self.val = val
         self.weight = weight
+        self.path = path  # 记录供应商
 
 
 value = [[0 for _ in range(100)] for _ in range(100)]
 weight = [[0 for _ in range(100)] for _ in range(100)]
 Max = 99999999
-res = Node(0, Max, Max)
+res = Node(0, Max, Max, '')  # 先把最小结果设为最大
 
 
 def bfs():
     global res
-    queue = [Node(1, 0, 0)]
+    queue = [Node(1, 0, 0, '')]
 
     while len(queue):
         temp_node = queue[0]
@@ -29,14 +30,13 @@ def bfs():
             new_weight = w + weight[p][i]
             if (new_val > d) or (new_weight > res.weight):
                 continue
-            queue.append(Node(p + 1, new_val, new_weight))
+            queue.append(Node(p + 1, new_val, new_weight, temp_node.path + str(i)))
 
 
 if __name__ == '__main__':
     # 部件个数，供应商个数，及最大的总价格
     print('请分别输入部件个数，供应商个数，及最大的总价格:')
     n, m, d = map(int, input().split())
-
     # 各个部件在各个供应商处购买的价格
     print('请输入各个部件在各个供应商处购买的价格:')
     for i in range(1, n + 1):
@@ -53,6 +53,9 @@ if __name__ == '__main__':
 
     bfs()
     print('最小总重量:', res.weight)
+    print('零件1、2、3、4来自对应的供应商是:')
+    for i in res.path:
+        print(i)
 
 '''
 4 3 28
