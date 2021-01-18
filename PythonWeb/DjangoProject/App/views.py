@@ -29,7 +29,7 @@ def get_name(request, name):
 
 
 def handle_response(request):
-    res = render(request, 'test.html')
+    res = render(request, 'array.html')
     return res
 
 

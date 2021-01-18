@@ -71,6 +71,7 @@ def raw_sql(request):
     return HttpResponse('raw sql update ok!')
 
 
+# 也可以不写
 def my_manager(request):
     return HttpResponse('自定义管理器')
 

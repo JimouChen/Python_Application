@@ -1,6 +1,6 @@
 from pyspark import SparkContext, SparkConf
 
-logFile = "file:////home/jmchen/PycharmProjects/python-application/ToolApp/SparkApp/test.txt"
+logFile = "file:////home/jmchen/PycharmProjects/python-application/ToolApp/SparkApp/array.txt"
 conf = SparkConf().setMaster('local').setAppName('MyApp')
 
 sc = SparkContext(conf=conf)

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+</head>
+<body>
+<center>
+    <h2>{{ title }}</h2>
+</center>
+
+<h4>
+    {% for u in users %}
+        <li>{{ u }}</li>
+
+    {% endfor %}
+
+</h4>
+
+<ul>
+    <li>
+        <p><a href="{% url 'App:test' %}">test_page</a></p>
+        <p><a href="{% url 'App:show' %}">show_page</a></p>
+        <a href="https://www.google.com.hk/webhp?hl=zh-CN&sa=X&ved=0ahUKEwipr6aoqqPoAhUDM94KHaipCYsQPAgH">google
+            link</a>
+    </li>
+</ul>
+
+</body>
+</html>

@@ -3,7 +3,6 @@
 # @Author  :  Jimou Chen
 """
 import pandas as pd
-import numpy as np
 
 
 # 得到三元组列表
@@ -33,15 +32,6 @@ def next_move(triad: list, init_input: str):
             return each[1]
 
 
-# 存到csv文件
-# def save_to_csv(txt_file):
-#     dataset = pd.read_table(txt_file, sep=' ', header=0)
-#     dataset.to_excel("w.xls", index=False)  # 保存为csv格式
-    # data_txt = np.loadtxt(txt_file)
-    # data_txtDF = pd.DataFrame(data_txt)
-    # data_txtDF.to_csv('w.csv', index=False)
-
-
 if __name__ == '__main__':
     triad_list = handle_file('word_count.txt')
     # print(triad_list)
@@ -53,4 +43,3 @@ if __name__ == '__main__':
     # input_init = '5772472939576565654158716657158714144646804158728571515714685858'
     # res = next_move(triad_list, input_init)
     # print(res)
-    # save_to_csv('test.txt')
