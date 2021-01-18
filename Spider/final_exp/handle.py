@@ -37,15 +37,9 @@ def split_move(move: str):
 
 
 if __name__ == '__main__':
-    # test = '123456781012'
-    # l = split_move(test)
-    # res = handle_next('9999129999109956999912341234', l)
-    # print(res)
     with open('chess.json') as f:
         json_file = f.read()
     init_list, move_list = handle_json(json_file)
-    # print(init_list)
-    # print(move_list)
 
     final_res = []
     # 切分步数
