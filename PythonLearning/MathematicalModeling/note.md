@@ -528,7 +528,7 @@ Process finished with exit code 0
   - f_xy:也就是x-y(x)^2
   - x_lim=(-5, 5), y_lim=(-5, 5)也就是在这个x，y轴的范围展示出来
 
-- 关键需要修改的部分,29-31行
+- 关键需要修改的部分,29-31行，33行的y0需要适当调
 
   ```python
   x = sympy.symbols('x')
@@ -584,9 +584,345 @@ if __name__ == '__main__':
 
 ```
 
-
+<img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126004745972-533198965.png" style="zoom:67%;" />
 
 
 
 ## 传染病模型
 
+- 传染病模型研究属于传染病动力学研究方向，这里只是将模型中微分方程进行了python实现
+
+- 传染病模型包括：SI、SIS、SIR、SIRS、SEIR、SEIRS共六个模型
+
+### SI模型
+
+- 比如病毒传染初期，没有加防疫手段，就符合SI模型
+
+- SI模型的表达式见网上(S:易感染，I:已感染)
+
+- 需要修改的参数
+
+  ```python
+  N = 10000  # N为人群总数
+  beta = 0.25  # β为传染率系数
+  gamma = 0  # gamma为恢复率系数
+  I_0 = 1  # I_0为感染者的初始人数
+  S_0 = N - I_0  # S_0为易感染者的初始人数
+  T = 150  # T为传播时间
+  ```
+
+  - β为传染率系数,比如现在100个人已经传染了，在一段时间内，传染新增了25人，则β为0.25
+  - gamma为恢复率系数，一开始没有抗体都是为0的，如果不为0，比如是开始有100人感染，在一个传播时间T后，治愈了6个人，则gamma取0.06
+  - I_0为感染者的初始人数
+  - S_0为易感染者的初始人数，这个要看情况，如果都不加干预，那就是N - I_0，一般看情况需要再考虑其他因素(交通，社交群体，航线等)，S_0考虑的越多，则越完备
+  - Susceptible易感染的，Infection已经感染的
+
+- code
+
+```python
+import numpy as np
+import scipy.integrate as spi
+import matplotlib.pyplot as plt
+
+N = 10000  # N为人群总数
+beta = 0.25  # β为传染率系数
+gamma = 0  # gamma为恢复率系数
+I_0 = 1  # I_0为感染者的初始人数
+S_0 = N - I_0  # S_0为易感染者的初始人数
+T = 150  # T为传播时间
+INI = (S_0, I_0)  # INI为初始状态下的数组
+
+
+def funcSI(inivalue, _):
+    Y = np.zeros(2)
+    X = inivalue
+    Y[0] = -(beta * X[0] * X[1]) / N + gamma * X[1]  # 易感个体变化
+    Y[1] = (beta * X[0] * X[1]) / N - gamma * X[1]  # 感染个体变化
+    return Y
+
+
+if __name__ == '__main__':
+    T_range = np.arange(0, T + 1)
+    RES = spi.odeint(funcSI, INI, T_range)
+    plt.plot(RES[:, 0], color='darkblue', label='Susceptible', marker='.')
+    plt.plot(RES[:, 1], color='red', label='Infection', marker='.')
+    plt.title('SI Model')
+    plt.legend()
+    plt.xlabel('Day')
+    plt.ylabel('Number')
+    plt.show()
+
+```
+
+<img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126011701220-865611893.png" style="zoom: 80%;" />
+
+- 可以看到10000个人大概在60天左右就全部感染了
+
+### SIS模型
+
+- 与SI区别不大，区别在于7行的gamma有初始值，以及17行的公式改变了
+
+```python
+import numpy as np
+import scipy.integrate as spi
+import matplotlib.pyplot as plt
+
+N = 10000  # N为人群总数
+beta = 0.25  # β为传染率系数
+gamma = 0.05  # gamma为恢复率系数
+I_0 = 1  # I_0为感染者的初始人数
+S_0 = N - I_0  # S_0为易感染者的初始人数
+T = 150  # T为传播时间
+INI = (S_0, I_0)  # INI为初始状态下的数组
+
+
+def funcSI(inivalue, _):
+    Y = np.zeros(2)
+    X = inivalue
+    Y[0] = -(beta * X[0]) / N * X[1] + gamma * X[1]  # 易感个体变化
+    Y[1] = (beta * X[0] * X[1]) / N - gamma * X[1]  # 感染个体变化
+    return Y
+
+
+if __name__ == '__main__':
+    T_range = np.arange(0, T + 1)
+    RES = spi.odeint(funcSI, INI, T_range)
+    plt.plot(RES[:, 0], color='darkblue', label='Susceptible', marker='.')
+    plt.plot(RES[:, 1], color='red', label='Infection', marker='.')
+    plt.title('SIS Model')
+    plt.legend()
+    plt.xlabel('Day')
+    plt.ylabel('Number')
+    plt.show()
+
+```
+
+<img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126012337702-518099954.png" style="zoom:80%;" />
+
+- 可以看到60-80天之间，逐渐稳定，有的人治愈后(获得抗体)活了下来，有的没治愈的就死了
+
+### SIR模型
+
+- 多了R_0为治愈者的初始人数，即刚开始注射疫苗恢复的人
+- 表达式也改变
+- 注意恢复治愈包括自身产生抗体以及通过医疗手段获得抗体两种
+
+
+
+```python
+import numpy as np
+import scipy.integrate as spi
+import matplotlib.pyplot as plt
+
+N = 10000  # N为人群总数
+beta = 0.25  # β为传染率系数
+gamma = 0.05  # gamma为恢复率系数
+I_0 = 1  # I_0为感染者的初始人数
+R_0 = 0  # R_0为治愈者的初始人数
+S_0 = N - I_0 - R_0  # S_0为易感染者的初始人数
+T = 150  # T为传播时间
+INI = (S_0, I_0, R_0)  # INI为初始状态下的数组
+
+
+def funcSIR(inivalue, _):
+    Y = np.zeros(3)
+    X = inivalue
+    Y[0] = -(beta * X[0] * X[1]) / N  # 易感个体变化
+    Y[1] = (beta * X[0] * X[1]) / N - gamma * X[1]  # 感染个体变化
+    Y[2] = gamma * X[1]  # 治愈个体变化
+    return Y
+
+
+if __name__ == '__main__':
+    T_range = np.arange(0, T + 1)
+    RES = spi.odeint(funcSIR, INI, T_range)
+    plt.plot(RES[:, 0], color='darkblue', label='Susceptible', marker='.')
+    plt.plot(RES[:, 1], color='red', label='Infection', marker='.')
+    plt.plot(RES[:, 2], color='green', label='Recovery', marker='.')
+    plt.title('SIR Model')
+    plt.legend()
+    plt.xlabel('Day')
+    plt.ylabel('Number')
+    plt.show()
+
+```
+
+<img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126012856029-403667398.png" style="zoom:80%;" />
+
+- 可以看到感染人数出现峰值，在前期已经开始使用抗体，病人逐渐治愈，最后所有人都恢复健康
+
+
+
+### SIRS模型
+
+- 多了Ts为抗体持续时间，也就是说有了抗体一段时间后，抗体失效，又变成了易感染人群
+- 公式也改变
+
+```python
+import numpy as np
+import scipy.integrate as spi
+import matplotlib.pyplot as plt
+
+N = 10000  # N为人群总数
+beta = 0.25  # β为传染率系数
+gamma = 0.05  # gamma为恢复率系数
+Ts = 7  # Ts为抗体持续时间
+I_0 = 1  # I_0为感染者的初始人数
+R_0 = 0  # R_0为治愈者的初始人数
+S_0 = N - I_0 - R_0  # S_0为易感染者的初始人数
+T = 150  # T为传播时间
+INI = (S_0, I_0, R_0)  # INI为初始状态下的数组
+
+
+def funcSIRS(inivalue, _):
+    Y = np.zeros(3)
+    X = inivalue
+    Y[0] = -(beta * X[0] * X[1]) / N + X[2] / Ts  # 易感个体变化
+    Y[1] = (beta * X[0] * X[1]) / N - gamma * X[1]  # 感染个体变化
+    Y[2] = gamma * X[1] - X[2] / Ts  # 治愈个体变化
+    return Y
+
+
+if __name__ == '__main__':
+    T_range = np.arange(0, T + 1)
+    RES = spi.odeint(funcSIRS, INI, T_range)
+    plt.plot(RES[:, 0], color='darkblue', label='Susceptible', marker='.')
+    plt.plot(RES[:, 1], color='red', label='Infection', marker='.')
+    plt.plot(RES[:, 2], color='green', label='Recovery', marker='.')
+    plt.title('SIRS Model')
+    plt.legend()
+    plt.xlabel('Day')
+    plt.ylabel('Number')
+    plt.show()
+
+```
+
+<img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126013611658-1218001757.png" style="zoom:80%;" />
+
+- 最终达到一个平衡
+
+
+
+### SEIR模型
+
+- 考虑了病毒的潜伏期(潜伏人群E)，也就是感染病毒后，过了潜伏期就是感染人群了
+
+- 多了E_0为潜伏者的初始人数，如果是0，那说明开始时有人感染，但是还没有发病，此时这类人不是易感染，但是他们携带病毒
+- 只有经过潜伏期，才能被传染
+- 公式有所变化
+
+```python
+import numpy as np
+import scipy.integrate as spi
+import matplotlib.pyplot as plt
+
+N = 10000  # N为人群总数
+beta = 0.6  # β为传染率系数
+gamma = 0.1  # gamma为恢复率系数
+Te = 14  # Te为疾病潜伏期
+I_0 = 1  # I_0为感染者的初始人数
+E_0 = 0  # E_0为潜伏者的初始人数
+R_0 = 0  # R_0为治愈者的初始人数
+S_0 = N - I_0 - R_0 - E_0  # S_0为易感染者的初始人数
+T = 150  # T为传播时间
+INI = (S_0, E_0, I_0, R_0)  # INI为初始状态下的数组
+
+
+def funcSEIR(inivalue, _):
+    Y = np.zeros(4)
+    X = inivalue
+    Y[0] = -(beta * X[0] * X[2]) / N  # 易感个体变化
+    Y[1] = (beta * X[0] * X[2] / N - X[1] / Te)  # 潜伏个体变化
+    Y[2] = X[1] / Te - gamma * X[2]  # 感染个体变化
+    Y[3] = gamma * X[2]  # 治愈个体变化
+    return Y
+
+
+if __name__ == '__main__':
+    T_range = np.arange(0, T + 1)
+    RES = spi.odeint(funcSEIR, INI, T_range)
+    plt.plot(RES[:, 0], color='darkblue', label='Susceptible', marker=
+    '.')
+    plt.plot(RES[:, 1], color='orange', label='Exposed', marker='.')
+    plt.plot(RES[:, 2], color='red', label='Infection', marker='.')
+    plt.plot(RES[:, 3], color='green', label='Recovery', marker='.')
+    plt.title('SEIR Model')
+    plt.legend()
+    plt.xlabel('Day')
+    plt.ylabel('Number')
+    plt.show()
+
+```
+
+<img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126014328064-1899684542.png" style="zoom:80%;" />
+
+- 潜伏期的人会比感染人群先到达峰值，最终都可以治愈
+
+### SEIRS模型
+
+- 考虑了抗体持续时间
+
+- 一般多了潜伏期的话，传染率系数会有所增加，上面的SEIR也是同理
+
+```python
+import numpy as np
+import scipy.integrate as spi
+import matplotlib.pyplot as plt
+
+N = 10000  # N为人群总数
+beta = 0.6  # β为传染率系数
+gamma = 0.1  # gamma为恢复率系数
+Ts = 7  # Ts为抗体持续时间
+Te = 14  # Te为疾病潜伏期
+I_0 = 1  # I_0为感染者的初始人数
+E_0 = 0  # E_0为潜伏者的初始人数
+R_0 = 0  # R_0为治愈者的初始人数
+S_0 = N - I_0 - R_0 - E_0  # S_0为易感染者的初始人数
+T = 150  # T为传播时间
+INI = (S_0, E_0, I_0, R_0)  # INI为初始状态下的数组
+
+
+def funcSEIRS(inivalue, _):
+    Y = np.zeros(4)
+    X = inivalue
+    Y[0] = -(beta * X[0] * X[2]) / N + X[3] / Ts  # 易感个体变化
+    Y[1] = (beta * X[0] * X[2] / N - X[1] / Te)  # 潜伏个体变化
+    Y[2] = X[1] / Te - gamma * X[2]  # 感染个体变化
+    Y[3] = gamma * X[2] - X[3] / Ts  # 治愈个体变化
+    return Y
+
+
+if __name__ == '__main__':
+    T_range = np.arange(0, T + 1)
+    RES = spi.odeint(funcSEIRS, INI, T_range)
+    plt.plot(RES[:, 0], color='darkblue', label='Susceptible', marker='.')
+    plt.plot(RES[:, 1], color='orange', label='Exposed', marker='.')
+    plt.plot(RES[:, 2], color='red', label='Infection', marker='.')
+    plt.plot(RES[:, 3], color='green', label='Recovery', marker='.')
+    plt.title('SETRS Model')
+    plt.legend()
+    plt.xlabel('Day')
+    plt.ylabel('Number')
+    plt.show()
+
+```
+
+<img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126015400873-268245591.png" style="zoom:80%;" />
+
+- 潜伏期的人先到峰值，然后是易感染者，然后是治愈者，他们最终会达到平衡稳定
+
+
+
+# 图论
+
+## Dijkstra
+
+
+
+
+
+## Floyd
+
+
+
+## 机场航线设计

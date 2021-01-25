@@ -30,7 +30,7 @@ if __name__ == '__main__':
     y = sympy.Function('y')
     f = x - y(x) ** 2
     f_np = sympy.lambdify((y(x), x), f)  # 符号表达式转隐函数
-    y0 = 1  # odeint需要给个初始值
+    y0 = 2  # odeint需要给个初始值
     xp = np.linspace(0, 5, 100)
     yp = integrate.odeint(f_np, y0, xp)  # 初始y0解f_np,x范围xp
     xn = np.linspace(0, -5, 100)
