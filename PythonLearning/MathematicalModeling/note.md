@@ -128,6 +128,60 @@ Process finished with exit code 0
 
 
 
+## pymprog求解
+
+- 官方文档：http://pymprog.sourceforge.net/
+
+  http://pymprog.sourceforge.net/intro.html#whetting
+
+#### 举例
+
+```
+maximize  15 x + 10 y         # profit
+S.T.
+             x         <=  3  # mountain bike limit
+                    y  <=  4  # racer limit
+             x +    y  <=  5  # frame limit
+             x >=0, y >=0     # non-negative
+```
+
+```python
+from pymprog import *
+
+if __name__ == '__main__':
+    begin('bike production')
+    x, y = var('x, y')  # variables
+    maximize(15 * x + 10 * y, 'profit')
+    x <= 3  # mountain bike limit
+    y <= 4  # racer production limit
+    x + y <= 5  # metal finishing limit
+    solve()
+
+    print('x取值：' + str(x.primal))
+    print('y取值：' + str(y.primal))
+    print('最优解为：' + str(vobj()))
+
+```
+
+- res
+
+```
+GLPK Simplex Optimizer, v4.65
+1 row, 2 columns, 2 non-zeros
+*     0: obj =  -0.000000000e+00 inf =   0.000e+00 (2)
+*     2: obj =   6.500000000e+01 inf =   0.000e+00 (0)
+OPTIMAL LP SOLUTION FOUND
+x取值：3.0
+y取值：2.0
+最优解为：65.0
+
+Process finished with exit code 0
+```
+
+
+
+
+
 ## 整数规划
 
 ### cvxpy求解
@@ -416,7 +470,7 @@ Process finished with exit code 0
   Process finished with exit code 0
   ```
 
-- 更多线性和非线性问题，分类问题，见我之前的sklearn blog
+- 更多线性和非线性问题、如多元回归、逻辑回归、其他分类问题，见我之前的sklearn blog
 
 
 
@@ -917,12 +971,668 @@ if __name__ == '__main__':
 
 ## Dijkstra
 
+### 解法1(常用)
+
+- 只需要给出带有权值的邻接矩阵即可求出最短路径和最短距离
+- 需要改变的第54行邻接矩阵的权值和65行的起点和终点，注意21行是从0还是1开始
+- 有向边和无向边的混合均可使用
+- ```g = defaultdict(list)```是得到一个元素全是list类型的字典
+- 举例<img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126144816051-2026015349.png" style="zoom: 60%;" />
+
+
+
+```python
+# dijkstra
+from collections import defaultdict
+from heapq import *
+
+inf = 99999  # 不连通值
+
+
+def init_graph(mtx_graph):
+    m_n = len(mtx_graph)  # 带权连接矩阵的阶数
+    edges = []  # 保存连通的两个点之间的距离(点A、点B、距离)
+    for i in range(m_n):
+        for j in range(m_n):
+            if i != j and mtx_graph[i][j] != inf:
+                edges.append((i, j, mtx_graph[i][j]))
+
+    return edges
+
+
+def dijkstra(edges, from_node, to_node):
+    go_path = []
+    to_node = to_node - 1 # 看情况，如果是从1开始的就减一
+    g = defaultdict(list)
+    for l, r, c in edges:
+        g[l].append((c, r))
+    q, seen = [(0, from_node - 1, ())], set()
+    while q:
+        (cost, v1, path) = heappop(q)  # 堆弹出当前路径最小成本
+        if v1 not in seen:
+            seen.add(v1)
+            path = (v1, path)
+            if v1 == to_node:
+                break
+            for c, v2 in g.get(v1, ()):
+                if v2 not in seen:
+                    heappush(q, (cost + c, v2, path))
+    if v1 != to_node:  # 无法到达
+        return float['inf'], []
+
+    if len(path) > 0:
+        left = path[0]
+        go_path.append(left)
+        right = path[1]
+        while len(right) > 0:
+            left = right[0]
+            go_path.append(left)
+            right = right[1]
+        go_path.reverse()  # 逆序变换
+        for i in range(len(go_path)):  # 标号加1
+            go_path[i] = go_path[i] + 1
+    return cost, go_path
+
+
+if __name__ == '__main__':
+    mtx_graph = [[0, 1, inf, 3, inf, inf, inf, inf, inf],
+                 [1, 0, 5, inf, 2, inf, inf, inf, inf],
+                 [inf, inf, 0, 1, inf, 6, inf, inf, inf],
+                 [inf, inf, inf, 0, inf, 7, inf, 9, inf],
+                 [inf, 2, 3, inf, 0, 4, 2, inf, 8],
+                 [inf, inf, 6, 7, inf, 0, inf, 2, inf],
+                 [inf, inf, inf, inf, inf, 1, 0, inf, 3],
+                 [inf, inf, inf, inf, inf, inf, 1, 0, 2],
+                 [inf, inf, inf, inf, 8, inf, 3, 2, 0]]
+
+    edges = init_graph(mtx_graph)
+    length, path = dijkstra(edges, 1, 9)
+    print('最短距离为：' + str(length))
+    print('前进路径为：' + str(path))
+
+```
+
+```
+最短距离为：8
+前进路径为：[1, 2, 5, 7, 9]
+
+Process finished with exit code 0
+```
+
+### 解法2
+
+- 输入是一个包含每个点与其他点联系和权值的字典
+- 下面是无向边的例子，适合无向边
+- 需要修改的是51的联系，62的起点，66行的起点和终点
+- <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126144528055-511872856.png" style="zoom:67%;" />
+
+```python
+import heapq
+Max = 99999999
+
+
+# 有点像BFS的思想
+def dijktestra(graph, start):
+    queue = []  # 优先队列
+    heapq.heappush(queue, (0, start))
+    visited = set()
+    path = {start: None}  # 记录该点的上一个点
+
+    # 先把一开始到达的所有路径距离设最大
+    distance = {start: 0}
+    for vertex in graph:
+        if vertex != start:
+            distance[vertex] = Max
+
+    while len(queue):
+        # 取出的当前在queue的第一个点
+        pair = heapq.heappop(queue)
+        dist = pair[0]
+        vertex = pair[1]
+        visited.add(vertex)
+
+        # 该点的所有连接点
+        nodes = graph[vertex].keys()
+        for v in nodes:
+            if v not in visited and dist + graph[vertex][v] < distance[v]:
+                heapq.heappush(queue, (dist + graph[vertex][v], v))  # 优先队列会自动把值最小的放在前面
+                path[v] = vertex  # 记录上一个点
+                distance[v] = dist + graph[vertex][v]  # 更新最小值
+
+    return path, distance
+
+
+def show_path(path, start, end):
+    shortest_path = []
+    vertex = end
+    while vertex != path[start]:
+        vertex = path[vertex]
+        shortest_path.append(vertex)
+
+    shortest_path.reverse()
+    shortest_path.pop(0)
+    shortest_path.append(end)
+
+    return shortest_path
+
+
+if __name__ == '__main__':
+    graph = {
+        'A': {'B': 10, 'D': 16, 'I': 5},
+        'B': {'A': 10, 'F': 15},
+        'C': {'D': 20, 'E': 15, 'I': 6},
+        'D': {'A': 16, 'C': 20, 'F': 9},
+        'E': {'C': 15, 'H': 4},
+        'F': {'B': 15, 'H': 30},
+        'G': {'C': 25, 'H': 12},
+        'H': {'E': 4, 'F': 9, 'G': 12},
+        'I': {'A': 5, 'C': 6}
+    }
+    path, distance = dijktestra(graph, 'A')
+    print(path)
+    print(distance)
+
+    shortest_path = show_path(path, 'A', 'H')
+    print('shortest_path:', shortest_path)
+
+```
+
+```
+该点的上一个点： {'A': None, 'B': 'A', 'D': 'A', 'I': 'A', 'C': 'I', 'F': 'B', 'E': 'C', 'H': 'E', 'G': 'H'}
+起点到其他各个点的最小距离： {'A': 0, 'B': 10, 'C': 11, 'D': 16, 'E': 26, 'F': 25, 'G': 42, 'H': 30, 'I': 5}
+shortest_path: ['A', 'I', 'C', 'E', 'H']
+```
+
 
 
 
 
 ## Floyd
 
+- 通过动态规划求解多源最短路径问题
+
+
+
+#### 举例
+
+<img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126144816051-2026015349.png" style="zoom: 60%;" />
+
+- 图和上面的图一样，求出从每一个点到其他点的最短距离和路径
+
+```python
+import numpy as np
+
+inf = 99999  # 不连通值
+
+
+def floyd(graph):
+    N = len(graph)
+    A = np.array(graph)
+    path = np.zeros((N, N))
+    for i in range(0, N):
+        for j in range(0, N):
+            if A[i][j] != inf:
+                path[i][j] = j
+
+    for k in range(0, N):
+        for i in range(0, N):
+            for j in range(0, N):
+                if A[i][k] + A[k][j] < A[i][j]:
+                    A[i][j] = A[i][k] + A[k][j]
+                    path[i][j] = path[i][k]
+
+    for i in range(0, N):
+        for j in range(0, N):
+            path[i][j] = path[i][j] + 1
+
+    print('距离 = \n', A)
+    print('路径 = \n', path)
+
+
+if __name__ == '__main__':
+    mtx_graph = [[0, 1, inf, 3, inf, inf, inf, inf, inf],
+                 [1, 0, 5, inf, 2, inf, inf, inf, inf],
+                 [inf, inf, 0, 1, inf, 6, inf, inf, inf],
+                 [inf, inf, inf, 0, inf, 7, inf, 9, inf],
+                 [inf, 2, 3, inf, 0, 4, 2, inf, 8],
+                 [inf, inf, 6, 7, inf, 0, inf, 2, inf],
+                 [inf, inf, inf, inf, inf, 1, 0, inf, 3],
+                 [inf, inf, inf, inf, inf, inf, 1, 0, 2],
+                 [inf, inf, inf, inf, 8, inf, 3, 2, 0]]
+    floyd(mtx_graph)
+
+```
+
+```
+距离 = 
+ [[ 0  1  6  3  3  6  5  8  8]
+ [ 1  0  5  4  2  5  4  7  7]
+ [21 20  0  1 18  6  9  8 10]
+ [22 21 13  0 19  7 10  9 11]
+ [ 3  2  3  4  0  3  2  5  5]
+ [15 14  6  7 12  0  3  2  4]
+ [14 13  7  8 11  1  0  3  3]
+ [13 12  8  9 10  2  1  0  2]
+ [11 10 10 11  8  4  3  2  0]]
+路径 = 
+ [[1. 2. 2. 4. 2. 2. 2. 2. 2.]
+ [1. 2. 3. 1. 5. 5. 5. 5. 5.]
+ [6. 6. 3. 4. 6. 6. 6. 6. 6.]
+ [8. 8. 6. 4. 8. 6. 8. 8. 8.]
+ [2. 2. 3. 3. 5. 7. 7. 7. 7.]
+ [8. 8. 3. 4. 8. 6. 8. 8. 8.]
+ [9. 9. 6. 6. 9. 6. 7. 6. 9.]
+ [9. 9. 7. 7. 9. 7. 7. 8. 9.]
+ [5. 5. 7. 7. 5. 7. 7. 8. 9.]]
+
+Process finished with exit code 0
+```
+
+- 距离，比如1到9的距离为8，即从第1行看到第9列
+
+- 怎么看最短路径看解释见下图
+
+  <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126174606468-866209777.png" style="zoom: 67%;" />
+
 
 
 ## 机场航线设计
+
+- 图的可视化
+- 数据清洗分析，可参考我那块Kaggle练习
+- 城市可作为图节点
+- 可参考down下来的pdf资料
+  - 找到最密集的点，作为交通枢纽，考虑其他成本、时效性、盈利因素之类的...
+
+# 回归
+
+- 多元回归、逻辑回归见我之前的blog
+- 也可参考pdf资料
+
+
+
+# 差分方程
+
+## 递推关系
+
+- 差分方程建模的关键在于如何得到第**n**组数据与第**n+1**组数据之间的关系
+
+#### 举例
+
+##### **酵母菌生长模型**
+
+- 相类比的还有比如兔子(其他生物)繁殖模型等
+
+- 如图所示我们用培养基培养细菌时，其数量变化通常会经历这四个时期。 
+
+  这个模型针对前三个时期建一个大致的模型： 
+
+  **调整期**、**对数期**、**稳定期**
+
+![](https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126190430231-1717036362.png)
+
+- 数据可以也从文件读入，这里直接写了
+
+  ```python
+  import matplotlib.pyplot as plt
+  
+  if __name__ == '__main__':
+      time = [i for i in range(0, 19)]
+      number = [9.6, 18.3, 29, 47.2, 71.1, 119.1, 174.6,
+                257.3, 350.7, 441.0, 513.3, 559.7, 594.8,
+                629.4, 640.8, 651.1, 655.9, 659.6, 661.8]
+      plt.title('Relationship between time and number')  # 创建标题
+      plt.xlabel('time')  # X轴标签
+      plt.ylabel('number')  # Y轴标签
+      plt.scatter(time, number)
+      plt.plot(time, number)  # 画图
+      plt.show()  # 显示
+  
+  ```
+
+<img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126191447722-1250708994.png" style="zoom:80%;" />
+
+<img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126191835753-994528864.png" style="zoom: 33%;" />
+
+
+
+- Δp：因为横坐标间隔是1，所以相邻纵坐标之差可以当成增速
+- 665是极限总群数量
+- 要求的是k,然后预测下一年
+- 需要修改的是4，17，18行，如果不只是算下一年，那要改40，46行
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+Max = 665
+
+
+# 获取相邻纵坐标的差值
+def get_delta(y_num: list):
+    delta_y = []
+    for i in range(len(y_num) - 1):
+        delta_y.append(y_num[i + 1] - y_num[i])
+
+    return delta_y
+
+
+if __name__ == '__main__':
+    time = [_ for _ in range(0, 19)]
+    number = [9.6, 18.3, 29, 47.2, 71.1, 119.1, 174.6,
+              257.3, 350.7, 441.0, 513.3, 559.7, 594.8,
+              629.4, 640.8, 651.1, 655.9, 659.6, 661.8]
+
+    plt.title('Relationship between time and number')  # 创建标题
+    plt.xlabel('time')  # X轴标签
+    plt.ylabel('number')  # Y轴标签
+    plt.scatter(time, number)
+    plt.plot(time, number)  # 画图
+    # plt.show()  # 显示， 注释掉后，实际曲线和预测曲线泛在同一个图里面对比
+
+    delta_p = get_delta(number)
+    number.pop(-1)
+    pn = np.array(number)
+    f = pn * (Max - pn)
+    res = np.polyfit(f, delta_p, 1)
+    print(res)
+    print('k = ', res[0])
+
+    # 预测
+    p0 = number[0]
+    p_list = []
+    for i in range(len(time) + 1):
+        p_list.append(p0)
+        p0 = res[0] * (Max - p0) * p0 + p0
+    plt.xlabel('time')  # X轴标签
+    plt.ylabel('number')  # Y轴标签
+    plt.title('Prediction')  # 创建标题
+    plt.scatter([_ for _ in range(0, len(time) + 1)], p_list, c='r')
+    plt.plot(p_list)
+    plt.show()
+
+```
+
+```
+[ 0.00081448 -0.30791574]
+k =  0.0008144797937893836
+
+Process finished with exit code 0
+```
+
+
+
+
+
+<img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126200256933-2071649500.png" style="zoom:80%;" />
+
+
+
+
+
+
+
+## 显式差分
+
+- 热传导方程，见https://www.bilibili.com/video/BV12h411d7Dm?p=8
+
+
+
+
+
+## 马尔科夫链
+
+#### 选举投票预测
+
+- 马尔科夫链是由具有以下性质的一系列事件构成的过程： 
+
+  - 一个事件有有限多个结果，称为状态，该过程总是这些状态中的一个； 
+
+  - 在过程的每个阶段或者时段，一个特定的结果可以从它现在的状态转移到任何状态，或者保持原状； 
+
+  - 每个阶段从一个状态转移到其他状态的概率用一个转移矩阵表示，矩阵每行的各元素在0到1之间，每行的和为1。
+
+- 选举投票趋势预测 
+
+  - 以美国大选为例，首先取得过去十次选举的历史数据，然后根据历史数据得到选民意向的转移矩阵，转移矩阵如下
+
+    <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126201527059-1102395362.png" style="zoom:70%;" />
+
+  - 比如，当前状态的共和党转移到下一状态的共和党的概率是0.75，以此类推
+
+    即如下关系：
+
+    <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126201916793-1556439911.png" style="zoom: 50%;" />
+
+  - 然后我们可以构造出差分表达式(共和党R，民主党D，独立候选人I)：
+
+    也就是下个状态等于前一个状态的所有可能之和
+
+    <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126202109626-1562639525.png" style="zoom: 50%;" />
+
+  - 通过求解差分方程组，预测出选民投票意向的长期趋势
+
+    - plt.annotate是标记文本，如
+
+      ```plt.annotate('DemocraticParty', xy=(5, 0.2))```中，xy=(a, b)是文字的位置，需要自己多试几次调一下
+
+  ```python
+  import matplotlib.pyplot as plt
+  
+  if __name__ == '__main__':
+  
+      RLIST = [1 / 3]
+      DLIST = [1 / 3]
+      ILIST = [1 / 3]
+      for i in range(40):
+          R = RLIST[i] * 0.75 + DLIST[i] * 0.20 + ILIST[i] * 0.40
+          RLIST.append(R)
+          D = RLIST[i] * 0.05 + DLIST[i] * 0.60 + ILIST[i] * 0.20
+          DLIST.append(D)
+          I = RLIST[i] * 0.20 + DLIST[i] * 0.20 + ILIST[i] * 0.40
+          ILIST.append(I)
+          plt.plot(RLIST)
+          plt.plot(DLIST)
+          plt.plot(ILIST)
+          plt.xlabel('Time')
+          plt.ylabel('Voting percent')
+          plt.annotate('DemocraticParty', xy=(5, 0.2))
+          plt.annotate('RepublicanParty', xy=(5, 0.5))
+          plt.annotate('IndependentCandidate', xy=(5, 0.25))
+          plt.show()
+          print(RLIST, DLIST, ILIST)
+  
+      print('预测的最后一年：RLIST: {}, DLIST: {}, ILIST: {}'.format(RLIST[-1], DLIST[-1], ILIST[-1]))
+  
+  ```
+
+  - 遍历画出每一年，这是最后一年的图
+
+  ```
+  ......
+  ......
+  预测的最后一年：RLIST: 0.5555555555483689, DLIST: 0.1944444444516318, ILIST: 0.2500000000000002
+  
+  Process finished with exit code 0
+  ```
+
+  <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126203544341-212524774.png" style="zoom:80%;" />
+
+  - 最后得到的长期趋势是： 
+
+    56%的人选共和党、 
+
+    19%的人选民主党、 
+
+    25%的人选独立候选人
+
+
+
+# 灰色与模糊
+
+## 多层模糊评价
+
+- 见资料
+
+## 模糊c均值聚类
+
+- 原理见资料
+- 聚类的算法实现参考我之前sklearn里面的聚类算法实现就行了
+
+## 灰色预测(经典常用)
+
+- 灰色预测是用灰色模式GM(1,1)来进行定量分析的，通常分为以下几类： 
+
+  - 灰色时间序列预测。用等时距观测到的反映预测对象特征的一系列数量（如产量、销量、人口数量、存款数量、利率等）构造灰色预测模型，预测未来某一时刻的特征量，或者达到某特征量的时间。 
+
+  - 畸变预测（灾变预测）。通过模型预测异常值出现的时刻，预测异常值什么时候出现在特定时区内。 
+
+  - 波形预测，或拓扑预测，通过灰色模型预测事物未来变动的轨迹。 
+
+  - 系统预测，对系统行为特征指标建立一族相互关联的灰色预测理论模型，在预测系统整体变化的同时，预测系统各个环节的变化。 
+
+  
+
+- 上述灰色预测方法的共同特征是： 
+
+  - **允许少数据预测**； 
+
+  - 允许对灰因果律实践进行预测，例如： 
+
+    - 灰因白果律事件：粮食生产预测(就是结果产量是已知的，中间受什么因素影响是未知的)
+
+    - 白因灰果律事件：开放项目前景预测(过程已知，但是结果前景未知)
+
+  - 具有可检验性（事前检验：建模可行性级比检验；模型检验：建模精度检验； 
+
+  预测检验：预测滚动检验）
+
+
+
+- 模型理论部分见资料或者网上看
+
+### 算法步骤
+
+
+
+- 要使用灰色预测模型，首先看看适不适用
+
+- 如果级比都落在可容覆盖范围内，就直接用
+
+  否则做平移变换
+
+<img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210127004120044-586264331.png" style="zoom: 50%;" />
+
+<img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210127004905362-1976707119.png" style="zoom: 67%;"  align='left'  />
+
+
+
+- 代码部分是可以使用cuda加速的
+- 只需改87行的输入数据和93行的预测个数m
+
+```python
+import torch as th
+import numpy as np
+
+
+class GM:
+    def __init__(self):
+        # 判断是否可用 gpu 编程 , 大量级计算使用GPU
+        self._is_gpu = False  # th.cuda.is_available()
+
+    def fit(self, dt: list or np.ndarray):
+        self._df: th.Tensor = th.from_numpy(np.array(dt, dtype=np.float32))
+        if self._is_gpu:
+            self._df.cuda()
+        self._n: int = len(self._df)
+        self._x, self._max_value = self._sigmod(self._df)
+        z: th.Tensor = self._next_to_mean(th.cumsum(self._x, dim=0))
+        self.coef: th.Tensor = self._coefficient(self._x, z)
+        del z
+        self._x0: th.Tensor = self._x[0]
+        self._pre: th.Tensor = self._pred()
+
+    # 归一化
+    def _sigmod(self, x: th.Tensor):
+        _maxv: th.Tensor = th.max(x)
+        return th.div(x, _maxv), _maxv
+
+    # 计算紧邻均值数列
+    def _next_to_mean(self, x_1: th.Tensor):
+        z: th.Tensor = th.zeros(self._n - 1)
+        if self._is_gpu:
+            z.cuda()
+        for i in range(1, self._n):  # 下标从0开始，取不到最大值
+            z[i - 1] = 0.5 * x_1[i] + 0.5 * x_1[i - 1]
+        return z
+
+    # 计算系数 a,b
+    def _coefficient(self, x: th.Tensor, z: th.Tensor):
+        B: th.Tensor = th.stack((-1 * z, th.ones(self._n - 1)), dim=1)
+        Y: th.Tensor = th.tensor(x[1:], dtype=th.float32).reshape((-1, 1))
+        if self._is_gpu:
+            B.cuda()
+            Y.cuda()
+
+        # 返回的是a和b的向量转置，第一个是a 第二个是b；
+        return th.matmul(th.matmul(th.inverse(th.matmul(B.t(), B)), B.t()), Y)
+
+    def _pred(self, start: int = 1, end: int = 0):
+        les: int = self._n + end
+        resut: th.Tensor = th.zeros(les)
+
+        if self._is_gpu:
+            resut.cuda()
+        resut[0] = self._x0
+        for i in range(start, les):
+            resut[i] = (self._x0 - (self.coef[1] / self.coef[0])) * \
+                       (1 - th.exp(self.coef[0])) * th.exp(-1 * self.coef[0] * (i))
+        del les
+        return resut
+
+    # 计算绝对误差
+    def confidence(self):
+        return round((th.sum(th.abs(th.div((self._x - self._pre), self._x))) / self._n).item(), 4)
+
+    # 预测个数，默认个数大于等于0，
+    def predict(self, m: int = 1, decimals: int = 4):
+        y_pred: th.Tensor = th.mul(self._pre, self._max_value)
+        y_pred_ = th.zeros(1)
+        if m < 0:
+            return "预测个数需大于等于0"
+        elif m > 0:
+            y_pred_: th.Tensor = self._pred(self._n, m)[-m:].mul(self._max_value)
+        else:
+            if self._is_gpu:
+                return list(map(lambda _: round(_, decimals), y_pred.cpu().numpy().tolist()))
+            else:
+                return list(map(lambda _: round(_, decimals), y_pred.numpy().tolist()))
+
+        # cat 拼接 0 x水平拼接，1y垂直拼接
+        result: th.Tensor = th.cat((y_pred, y_pred_), dim=0)
+        del y_pred, y_pred_
+        if self._is_gpu:
+            return list(map(lambda _: round(_, decimals), result.cpu().numpy().tolist()))
+        return list(map(lambda _: round(_, decimals), result.numpy().tolist()))
+
+
+if __name__ == "__main__":
+    ls = np.arange(91, 100, 2)  # ls是原始的值
+    print(type(ls))
+    gm = GM()
+    gm.fit(ls)
+    print('绝对误差: ', gm.confidence())
+    print('原始值: ', ls)
+    print('预测: ', gm.predict(m=2))  # m是2代表要预测后面两个值
+
+```
+
+```
+<class 'numpy.ndarray'>
+绝对误差:  0.0002
+原始值:  [91 93 95 97 99]
+预测:  [91.0, 93.0178, 94.9758, 96.9751, 99.0164, 101.1007, 103.2289]
+
+Process finished with exit code 0
+```
+
