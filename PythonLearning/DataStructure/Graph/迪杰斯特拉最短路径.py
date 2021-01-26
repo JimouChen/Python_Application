@@ -65,8 +65,8 @@ if __name__ == '__main__':
         'I': {'A': 5, 'C': 6}
     }
     path, distance = dijktestra(graph, 'A')
-    print(path)
-    print(distance)
+    print('该点的上一个点：', path)
+    print('起点到其他各个点的最小距离：', distance)
 
     shortest_path = show_path(path, 'A', 'H')
     print('shortest_path:', shortest_path)
