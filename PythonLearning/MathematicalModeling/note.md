@@ -1,5 +1,7 @@
 # 规划
 
+
+
 ## 线性规划
 
 ### scipy求解
@@ -9,6 +11,8 @@
   求解前转化为下面的标准形式
 
   <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210125160917373-302412204.png" style="zoom:80%;" />
+
+  
 
 ```python
 from scipy import optimize
@@ -30,23 +34,23 @@ print(res.x)
 
 - 使用scipy求解z的最大值
 
-    - c是目标函数的系数矩阵
+  - c是目标函数的系数矩阵
 
-    - A是化成标准的<=式子的左边的系数矩阵
+  - A是化成标准的<=式子的左边的系数矩阵
 
-    - B是化成标准的<=式子的右边的数值矩阵
+  - B是化成标准的<=式子的右边的数值矩阵
 
-    - Aeq是所有=左边的系数矩阵，记得里面是[[]]二维
+  - Aeq是所有=左边的系数矩阵，记得里面是[[]]二维
 
-    - Beq是所有=右边的数值矩阵
+  - Beq是所有=右边的数值矩阵
 
-    - 下面第11行-c加-，是因为此题求的是最大值，但是标准格式是求最小值，所以加负号
+  - 下面第11行-c加-，是因为此题求的是最大值，但是标准格式是求最小值，所以加负号
 
-    - 另外上面的3个变量都大于0，这里可以使用```bounds=(0, None)```,bounds=(min,max)是范围，None代表无穷，如果不写bounds，那默认是(0, None)
+  - 另外上面的3个变量都大于0，这里可以使用```bounds=(0, None)```,bounds=(min,max)是范围，None代表无穷，如果不写bounds，那默认是(0, None)
 
-      ```python
-      res = optimize.linprog(-c, A, B, Aeq, Beq, bounds=(0, None))
-      ```
+    ```python
+    res = optimize.linprog(-c, A, B, Aeq, Beq, bounds=(0, None))
+    ```
 
   ```python
   from scipy import optimize
@@ -64,7 +68,7 @@ print(res.x)
   
   ```
 
-    - res
+  - res
 
   ```
        con: array([1.80713222e-09])
@@ -79,8 +83,8 @@ print(res.x)
   Process finished with exit code 0
   ```
 
-    - fun是目标函数最小值
-    - x是最优解，即上面的x1,x2,x3的最优解
+  - fun是目标函数最小值
+  - x是最优解，即上面的x1,x2,x3的最优解
 
 #### 举例2
 
@@ -114,11 +118,15 @@ con: array([3.75850107e-09])
 Process finished with exit code 0
 ```
 
+
+
 ### pulp求解
 
 - 也可以使用pulp求解，见https://www.bilibili.com/video/BV12h411d7Dm?p=4
 
 - 但是稍微繁琐
+
+
 
 ## pymprog求解
 
@@ -170,6 +178,10 @@ y取值：2.0
 Process finished with exit code 0
 ```
 
+
+
+
+
 ## 整数规划
 
 ### cvxpy求解
@@ -177,11 +189,11 @@ Process finished with exit code 0
 - 和线性规划差不多，但是多了个约束，那就是部分变量被约束为整数
 
 - 目前没有一种方法可以有效地求解一切整数规划。常见的整数规划求解算法有：
-    - 分支定界法：可求纯或混合整数线性规划；
-    - 割平面法：可求纯或混合整数线性规划；
-    - 隐枚举法：用于求解0-1整数规划，有过滤隐枚举法和分支隐枚举法；
-    - 匈牙利法：解决指派问题（0-1规划特殊情形）；
-    - Monte Carlo法：求解各种类型规划。
+  - 分支定界法：可求纯或混合整数线性规划；
+  - 割平面法：可求纯或混合整数线性规划；
+  - 隐枚举法：用于求解0-1整数规划，有过滤隐枚举法和分支隐枚举法；
+  - 匈牙利法：解决指派问题（0-1规划特殊情形）；
+  - Monte Carlo法：求解各种类型规划。
 
 #### 举例1
 
@@ -228,34 +240,38 @@ Process finished with exit code 0
 
 - 参考：https://zhuanlan.zhihu.com/p/344215929
 
+
+
+
+
 ## 非线性规划
 
 - 非线性规划可分为两种，目标函数是凸函数或者是非凸函数
 
-    - 凸函数的非线性规划：如f = x^2+y^2+x*y，可以使用scipy
+  - 凸函数的非线性规划：如f = x^2+y^2+x*y，可以使用scipy
 
-    - 非凸函数的非线性规划：如求极值，可以有如下方法
+  - 非凸函数的非线性规划：如求极值，可以有如下方法
 
-        - 纯数学方法，求导求极值
+    - 纯数学方法，求导求极值
 
-        - 神经网络，深度学习(bp算法链式求导)
+    - 神经网络，深度学习(bp算法链式求导)
 
-        - scipy.optimize.minimize
+    - scipy.optimize.minimize
 
-          ```
-          fun：求最小值的目标函数
-          args：常数值
-          method：求极值方法，一般默认。
-          constraints：约束条件
-          x0：变量的初始猜测值，注意 minimize是局部最优
-          ```
+      ```
+      fun：求最小值的目标函数
+      args：常数值
+      method：求极值方法，一般默认。
+      constraints：约束条件
+      x0：变量的初始猜测值，注意 minimize是局部最优
+      ```
 
 #### 举例
 
 - 计算1/x+x的最小值
 
-    - 只需要改12行的系数，15行的初始猜测值，和8行的函数
-    - 如果结果是True，则是找到局部最优解，若是False，则结果是错误的
+  - 只需要改12行的系数，15行的初始猜测值，和8行的函数
+  - 如果结果是True，则是找到局部最优解，若是False，则结果是错误的
 
   ```python
   from scipy.optimize import minimize
@@ -288,6 +304,10 @@ Process finished with exit code 0
   
   Process finished with exit code 0
   ```
+
+  
+
+  
 
 #### 举例2
 
@@ -426,7 +446,7 @@ Process finished with exit code 0
 
 - 另外，这个线性拟合也可以使用sklearn求k和b，再去画图
 
-    - 注意维度转换X = X.reshape(-1, 1)
+  - 注意维度转换X = X.reshape(-1, 1)
 
   ```python
   from sklearn import linear_model
@@ -452,18 +472,23 @@ Process finished with exit code 0
 
 - 更多线性和非线性问题、如多元回归、逻辑回归、其他分类问题，见我之前的sklearn blog
 
+
+
 # 微分方程
 
 - 微分方程是用来描述某一类函数与其导数之间关系的方程，其解是一个符合方程的函数。微分方程按自变量个数可分为 **常微分方程**和**偏微分方程**，
 
-  前者表达通式
-  ：<img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210125234039695-755335755.png" style="zoom:50%;" />
+  前者表达通式 ：<img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210125234039695-755335755.png" style="zoom:50%;" />
 
   后者表达通式：<img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210125234109978-1913319984.png" style="zoom:67%;" />
 
 - 建议稍微复习一下高数上册最后微分方程那章再看看会更好
 
+
+
 ## 解析解
+
+
 
 - 使用sympy库，但是得到的是字符形式的格式
 
@@ -493,23 +518,24 @@ Process finished with exit code 0
   
   ```
 
-    - 此段解释可见：https://www.bilibili.com/video/BV12h411d7Dm?p=6
+  - 此段解释可见：https://www.bilibili.com/video/BV12h411d7Dm?p=6
 
   <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210125235722095-422250700.png" style="zoom:80%;" />
 
-    - 如果最后加上```print(x_t_sol)```
+  - 如果最后加上```print(x_t_sol)```
 
-      结果为：
+    结果为：
 
   ```
   Eq(x(t), (-gamma/(2*sqrt(gamma**2 - 1)) + 1/2)*exp(omega_0*t*(-gamma - sqrt(gamma - 1)*sqrt(gamma + 1))) + (gamma/(2*sqrt(gamma**2 - 1)) + 1/2)*exp(omega_0*t*(-gamma + sqrt(gamma - 1)*sqrt(gamma + 1))))
   
   ```
 
+  
 
 - 结果较为简单的常微分方程
 
-    - f(x)''+f(x)=0 二阶常系数齐次微分方程
+  - f(x)''+f(x)=0 二阶常系数齐次微分方程
 
   ```python
   import sympy as sy
@@ -536,20 +562,25 @@ Process finished with exit code 0
 
 - 可以参考：https://blog.csdn.net/your_answer/article/details/79234275
 
+
+
+
+
 ## 数值解
+
+
 
 - 当ODE(常微分方程)无法求得解析解时，可以用scipy中的integrate.odeint求数值解来探索其解的部分性质,并辅以可视化，能直观地展现ODE解的函数表达
 
 #### 举例
 
--
-一阶非线性常微分方程 <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126001647795-11891498.png" style="zoom:50%;" />
+- 一阶非线性常微分方程 <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126001647795-11891498.png" style="zoom:50%;" />
 
 - plot_direction_field函数里面的参数意义：
 
-    - y_x:也就是y(x)
-    - f_xy:也就是x-y(x)^2
-    - x_lim=(-5, 5), y_lim=(-5, 5)也就是在这个x，y轴的范围展示出来
+  - y_x:也就是y(x)
+  - f_xy:也就是x-y(x)^2
+  - x_lim=(-5, 5), y_lim=(-5, 5)也就是在这个x，y轴的范围展示出来
 
 - 关键需要修改的部分,29-31行，33行的y0需要适当调
 
@@ -558,6 +589,8 @@ Process finished with exit code 0
   y = sympy.Function('y')
   f = x - y(x) ** 2
   ```
+
+  
 
 ```python
 import numpy as np
@@ -607,6 +640,8 @@ if __name__ == '__main__':
 
 <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126004745972-533198965.png" style="zoom:67%;" />
 
+
+
 ## 传染病模型
 
 - 传染病模型研究属于传染病动力学研究方向，这里只是将模型中微分方程进行了python实现
@@ -630,11 +665,11 @@ if __name__ == '__main__':
   T = 150  # T为传播时间
   ```
 
-    - β为传染率系数,比如现在100个人已经传染了，在一段时间内，传染新增了25人，则β为0.25
-    - gamma为恢复率系数，一开始没有抗体都是为0的，如果不为0，比如是开始有100人感染，在一个传播时间T后，治愈了6个人，则gamma取0.06
-    - I_0为感染者的初始人数
-    - S_0为易感染者的初始人数，这个要看情况，如果都不加干预，那就是N - I_0，一般看情况需要再考虑其他因素(交通，社交群体，航线等)，S_0考虑的越多，则越完备
-    - Susceptible易感染的，Infection已经感染的
+  - β为传染率系数,比如现在100个人已经传染了，在一段时间内，传染新增了25人，则β为0.25
+  - gamma为恢复率系数，一开始没有抗体都是为0的，如果不为0，比如是开始有100人感染，在一个传播时间T后，治愈了6个人，则gamma取0.06
+  - I_0为感染者的初始人数
+  - S_0为易感染者的初始人数，这个要看情况，如果都不加干预，那就是N - I_0，一般看情况需要再考虑其他因素(交通，社交群体，航线等)，S_0考虑的越多，则越完备
+  - Susceptible易感染的，Infection已经感染的
 
 - code
 
@@ -726,6 +761,8 @@ if __name__ == '__main__':
 - 表达式也改变
 - 注意恢复治愈包括自身产生抗体以及通过医疗手段获得抗体两种
 
+
+
 ```python
 import numpy as np
 import scipy.integrate as spi
@@ -767,6 +804,8 @@ if __name__ == '__main__':
 <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126012856029-403667398.png" style="zoom:80%;" />
 
 - 可以看到感染人数出现峰值，在前期已经开始使用抗体，病人逐渐治愈，最后所有人都恢复健康
+
+
 
 ### SIRS模型
 
@@ -815,6 +854,8 @@ if __name__ == '__main__':
 <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126013611658-1218001757.png" style="zoom:80%;" />
 
 - 最终达到一个平衡
+
+
 
 ### SEIR模型
 
@@ -924,6 +965,8 @@ if __name__ == '__main__':
 
 - 潜伏期的人先到峰值，然后是易感染者，然后是治愈者，他们最终会达到平衡稳定
 
+
+
 # 图论
 
 ## Dijkstra
@@ -934,8 +977,9 @@ if __name__ == '__main__':
 - 需要改变的第54行邻接矩阵的权值和65行的起点和终点，注意21行是从0还是1开始
 - 有向边和无向边的混合均可使用
 - ```g = defaultdict(list)```是得到一个元素全是list类型的字典
--
-举例<img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126144816051-2026015349.png" style="zoom: 60%;" />
+- 举例<img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126144816051-2026015349.png" style="zoom: 60%;" />
+
+
 
 ```python
 # dijkstra
@@ -1099,9 +1143,15 @@ if __name__ == '__main__':
 shortest_path: ['A', 'I', 'C', 'E', 'H']
 ```
 
+
+
+
+
 ## Floyd
 
 - 通过动态规划求解多源最短路径问题
+
+
 
 #### 举例
 
@@ -1184,18 +1234,22 @@ Process finished with exit code 0
 
   <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126174606468-866209777.png" style="zoom: 67%;" />
 
+
+
 ## 机场航线设计
 
 - 图的可视化
 - 数据清洗分析，可参考我那块Kaggle练习
 - 城市可作为图节点
 - 可参考down下来的pdf资料
-    - 找到最密集的点，作为交通枢纽，考虑其他成本、时效性、盈利因素之类的...
+  - 找到最密集的点，作为交通枢纽，考虑其他成本、时效性、盈利因素之类的...
 
 # 回归
 
 - 多元回归、逻辑回归见我之前的blog
 - 也可参考pdf资料
+
+
 
 # 差分方程
 
@@ -1209,9 +1263,9 @@ Process finished with exit code 0
 
 - 相类比的还有比如兔子(其他生物)繁殖模型等
 
-- 如图所示我们用培养基培养细菌时，其数量变化通常会经历这四个时期。
+- 如图所示我们用培养基培养细菌时，其数量变化通常会经历这四个时期。 
 
-  这个模型针对前三个时期建一个大致的模型：
+  这个模型针对前三个时期建一个大致的模型： 
 
   **调整期**、**对数期**、**稳定期**
 
@@ -1239,6 +1293,8 @@ Process finished with exit code 0
 <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126191447722-1250708994.png" style="zoom:80%;" />
 
 <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126191835753-994528864.png" style="zoom: 33%;" />
+
+
 
 - Δp：因为横坐标间隔是1，所以相邻纵坐标之差可以当成增速
 - 665是极限总群数量
@@ -1304,47 +1360,61 @@ k =  0.0008144797937893836
 Process finished with exit code 0
 ```
 
+
+
+
+
 <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126200256933-2071649500.png" style="zoom:80%;" />
+
+
+
+
+
+
 
 ## 显式差分
 
 - 热传导方程，见https://www.bilibili.com/video/BV12h411d7Dm?p=8
 
+
+
+
+
 ## 马尔科夫链
 
 #### 选举投票预测
 
-- 马尔科夫链是由具有以下性质的一系列事件构成的过程：
+- 马尔科夫链是由具有以下性质的一系列事件构成的过程： 
 
-    - 一个事件有有限多个结果，称为状态，该过程总是这些状态中的一个；
+  - 一个事件有有限多个结果，称为状态，该过程总是这些状态中的一个； 
 
-    - 在过程的每个阶段或者时段，一个特定的结果可以从它现在的状态转移到任何状态，或者保持原状；
+  - 在过程的每个阶段或者时段，一个特定的结果可以从它现在的状态转移到任何状态，或者保持原状； 
 
-    - 每个阶段从一个状态转移到其他状态的概率用一个转移矩阵表示，矩阵每行的各元素在0到1之间，每行的和为1。
+  - 每个阶段从一个状态转移到其他状态的概率用一个转移矩阵表示，矩阵每行的各元素在0到1之间，每行的和为1。
 
-- 选举投票趋势预测
+- 选举投票趋势预测 
 
-    - 以美国大选为例，首先取得过去十次选举的历史数据，然后根据历史数据得到选民意向的转移矩阵，转移矩阵如下
+  - 以美国大选为例，首先取得过去十次选举的历史数据，然后根据历史数据得到选民意向的转移矩阵，转移矩阵如下
 
-      <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126201527059-1102395362.png" style="zoom:70%;" />
+    <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126201527059-1102395362.png" style="zoom:70%;" />
 
-    - 比如，当前状态的共和党转移到下一状态的共和党的概率是0.75，以此类推
+  - 比如，当前状态的共和党转移到下一状态的共和党的概率是0.75，以此类推
 
-      即如下关系：
+    即如下关系：
 
-      <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126201916793-1556439911.png" style="zoom: 50%;" />
+    <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126201916793-1556439911.png" style="zoom: 50%;" />
 
-    - 然后我们可以构造出差分表达式(共和党R，民主党D，独立候选人I)：
+  - 然后我们可以构造出差分表达式(共和党R，民主党D，独立候选人I)：
 
-      也就是下个状态等于前一个状态的所有可能之和
+    也就是下个状态等于前一个状态的所有可能之和
 
-      <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126202109626-1562639525.png" style="zoom: 50%;" />
+    <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126202109626-1562639525.png" style="zoom: 50%;" />
 
-    - 通过求解差分方程组，预测出选民投票意向的长期趋势
+  - 通过求解差分方程组，预测出选民投票意向的长期趋势
 
-        - plt.annotate是标记文本，如
+    - plt.annotate是标记文本，如
 
-          ```plt.annotate('DemocraticParty', xy=(5, 0.2))```中，xy=(a, b)是文字的位置，需要自己多试几次调一下
+      ```plt.annotate('DemocraticParty', xy=(5, 0.2))```中，xy=(a, b)是文字的位置，需要自己多试几次调一下
 
   ```python
   import matplotlib.pyplot as plt
@@ -1376,7 +1446,7 @@ Process finished with exit code 0
   
   ```
 
-    - 遍历画出每一年，这是最后一年的图
+  - 遍历画出每一年，这是最后一年的图
 
   ```
   ......
@@ -1388,13 +1458,15 @@ Process finished with exit code 0
 
   <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210126203544341-212524774.png" style="zoom:80%;" />
 
-    - 最后得到的长期趋势是：
+  - 最后得到的长期趋势是： 
 
-      56%的人选共和党、
+    56%的人选共和党、 
 
-      19%的人选民主党、
+    19%的人选民主党、 
 
-      25%的人选独立候选人
+    25%的人选独立候选人
+
+
 
 # 灰色与模糊
 
@@ -1409,35 +1481,39 @@ Process finished with exit code 0
 
 ## 灰色预测(经典常用)
 
-- 灰色预测是用灰色模式GM(1,1)来进行定量分析的，通常分为以下几类：
+- 灰色预测是用灰色模式GM(1,1)来进行定量分析的，通常分为以下几类： 
 
-    - 灰色时间序列预测。用等时距观测到的反映预测对象特征的一系列数量（如产量、销量、人口数量、存款数量、利率等）构造灰色预测模型，预测未来某一时刻的特征量，或者达到某特征量的时间。
+  - 灰色时间序列预测。用等时距观测到的反映预测对象特征的一系列数量（如产量、销量、人口数量、存款数量、利率等）构造灰色预测模型，预测未来某一时刻的特征量，或者达到某特征量的时间。 
 
-    - 畸变预测（灾变预测）。通过模型预测异常值出现的时刻，预测异常值什么时候出现在特定时区内。
+  - 畸变预测（灾变预测）。通过模型预测异常值出现的时刻，预测异常值什么时候出现在特定时区内。 
 
-    - 波形预测，或拓扑预测，通过灰色模型预测事物未来变动的轨迹。
+  - 波形预测，或拓扑预测，通过灰色模型预测事物未来变动的轨迹。 
 
-    - 系统预测，对系统行为特征指标建立一族相互关联的灰色预测理论模型，在预测系统整体变化的同时，预测系统各个环节的变化。
+  - 系统预测，对系统行为特征指标建立一族相互关联的灰色预测理论模型，在预测系统整体变化的同时，预测系统各个环节的变化。 
 
+  
 
-- 上述灰色预测方法的共同特征是：
+- 上述灰色预测方法的共同特征是： 
 
-    - **允许少数据预测**；
+  - **允许少数据预测**； 
 
-    - 允许对灰因果律实践进行预测，例如：
+  - 允许对灰因果律实践进行预测，例如： 
 
-        - 灰因白果律事件：粮食生产预测(就是结果产量是已知的，中间受什么因素影响是未知的)
+    - 灰因白果律事件：粮食生产预测(就是结果产量是已知的，中间受什么因素影响是未知的)
 
-        - 白因灰果律事件：开放项目前景预测(过程已知，但是结果前景未知)
+    - 白因灰果律事件：开放项目前景预测(过程已知，但是结果前景未知)
 
-    - 具有可检验性（事前检验：建模可行性级比检验；模型检验：建模精度检验；
+  - 具有可检验性（事前检验：建模可行性级比检验；模型检验：建模精度检验； 
 
   预测检验：预测滚动检验）
+
 
 
 - 模型理论部分见资料或者网上看
 
 ### 算法步骤
+
+
 
 - 要使用灰色预测模型，首先看看适不适用
 
@@ -1448,6 +1524,8 @@ Process finished with exit code 0
 <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210127004120044-586264331.png" style="zoom: 50%;" />
 
 <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210127004905362-1976707119.png" style="zoom: 67%;"/>
+
+
 
 - 代码部分是可以使用cuda加速的
 - 只需改87行的输入数据和93行的预测个数m
@@ -1507,7 +1585,7 @@ class GM:
             resut.cuda()
         resut[0] = self._x0
         for i in range(start, les):
-            resut[i] = (self._x0 - (self.coef[1] / self.coef[0])) *
+            resut[i] = (self._x0 - (self.coef[1] / self.coef[0])) * \
                        (1 - th.exp(self.coef[0])) * th.exp(-1 * self.coef[0] * (i))
         del les
         return resut
@@ -1558,6 +1636,315 @@ if __name__ == "__main__":
 Process finished with exit code 0
 ```
 
-# 蒙特卡洛
+
+
+# 蒙特卡罗
+
+## 蒙特卡罗算法
+
+- 由冯.诺依曼提出来的
+
+- 蒙特·卡罗(Monte Carlo method)又称统计模拟方法，一种以概率统计理论为指导的数值计算方法。是指使用随机数(或者伪随机数)来解决很多计算问题的方法。
+
+- 基本思想
+
+  当所求解问题是某种随机事件出现的概率，或者是某个随机变量的期望值时，通过某种“实验”的方法，以这种事件出现的频率估计这一随机事件的概率，或者得到这个随机变量的某些数字特征，并将其作为问题的解。
+
+
+
+#### 举例
+
+- **蒙特卡罗方法求圆周率** 
+
+  基本思想：在图中区域产生足够多的随机数点，然后计算落在圆内的点的个数与总个数的比值再乘以4，就是圆周率。
+
+  <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210127142359134-1130879298.png" style="zoom: 67%;" />
+
+- random.random()得到的是0到1之间的(伪)随机数，若要某个整数范围，则用random.randint(a, b)，是有包括a和b的
+
+```python
+import math
+import random
+
+if __name__ == '__main__':
+
+    M = input('请输入一个较大的整数')
+    N = 0
+    for i in range(int(M)):
+        x = random.random()
+        y = random.random()
+        if math.sqrt(x ** 2 + y ** 2) < 1:
+            N += 1
+            pi = 4 * N / int(M)
+            # print(pi)
+    print(pi)
+
+```
+
+```
+请输入一个较大的整数9999999
+3.1417339141733915
+
+Process finished with exit code 0
+```
+
+
+
+- **蒙特卡罗求定积分**
+
+  利用python计算函数y=x**2在[0,1]区间的定积分 
+
+  基本思想：和上例相似
+
+  ![](https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210127145751634-1347413778.png)
+
+```python
+"""
+求f(x) = x^2的定积分
+"""
+
+import random
+
+if __name__ == '__main__':
+    n = int(input('请输入一个较大的整数:'))
+    m = 0
+    for i in range(n):
+        x = random.random()
+        y = random.random()
+        if y < x ** 2:  # 找到落在f(x)下面的点
+            m += 1
+    R = m / n # 这里因为总面积是1所以省略乘以1了
+    print(R)
+
+```
+
+```
+请输入一个较大的整数:999999
+0.33292533292533294
+
+Process finished with exit code 0
+```
+
+
+
+## 三门问题
+
+- 背景
+
+  三门问题（Monty Hall probelm）亦称为蒙提霍尔问题，出自美国电视游戏节目Let’s Make a Deal。参赛者会看见三扇关闭了的门，其中一扇的后面有一辆汽车，选中后面有车的那扇门可赢得该汽车，另外两扇门则各藏有一只山羊。当参赛者选定了一扇门，但未去开启它的时候，节目主持人开启剩下两扇门的其中一扇，露出其中一只山羊。主持人其后问参赛者要不要换另一扇仍然关上的门。问题是：换另一扇门是否会增加参赛者赢得汽车的几率？如果严格按照上述条件，即主持人清楚地知道，自己打开的那扇门后面是羊，那么答案是会。不换门的话，赢得汽车的几率是1/3,换门的话，赢得汽车的几率是2/3
+
+- 应用蒙特卡罗重点在使用随机数来模拟类似于赌博问题的赢率问题，通过多次模拟得到所要计算值的模拟值
+
+- 解决思路：
+
+  在三门问题中，用0、1、2分代表三扇门的编号，在[0,2]之间随机生成一个整数代表奖品所在门的编号prize，再次在[0,2]之间随机生成一个整数代表参赛者所选择的门的编号guess。用变量change代表游戏中的换门(true)与不换门(false)
+
+  <img src="https://img2020.cnblogs.com/blog/2134757/202101/2134757-20210127152448229-250150715.png" style="zoom:80%;" />
+
+
+
+
+
+```python
+import random
+
+
+def play(change):
+    prize = random.randint(0, 2)
+    guess = random.randint(0, 2)
+    if prize == guess:
+        if change:
+            return False
+        else:
+            return True
+    else:
+        if change:
+            return True
+        else:
+            return False
+
+
+def winRate(change, N):
+    win = 0
+    for i in range(0, N):
+        if play(change):
+            win = win + 1
+            # print('中奖率为: ')
+            # print(win / N)
+    print('中奖率为: ')
+    print(win / N)
+
+
+if __name__ == '__main__':
+    N = 100000
+    print('玩' + str(N) + '次，每一次都换门:')
+    winRate(True, N)
+    print()
+    print('玩' + str(N) + '次，每一次都不换门:')
+    winRate(False, N)
+
+```
+
+```
+玩100000次，每一次都换门:
+中奖率为: 
+0.66748
+
+玩100000次，每一次都不换门:
+中奖率为: 
+0.33008
+
+Process finished with exit code 0
+```
+
+## 巧克力豆问题
+
+- 见资料
+
+
+
+# 时间序列
+
+- 时序问题也可使用神经网络里面的LSTM(长短时记忆)
+
+- 预测的是近期的，不是预测长远的(长远预测需要挖掘更多特征，深度学习那块的)
+
+- 均方差：
+
+  ```python
+  from sklearn.metrics import mean_squared_error
+  from math import sqrt
+  rms = sqrt(mean_squared_error(test, pred))# 把实际和预测的放进去
+  print(rms)
+  ```
+
+- 见https://www.bilibili.com/video/BV12h411d7Dm?p=10
+
+
+
+## 简单指数平滑法
+
+- 导入数据
+- 切分数据
+- 代码适当修改和测试
+
+```python
+from statsmodels.tsa.api import SimpleExpSmoothing
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error
+from math import sqrt
+
+if __name__ == '__main__':
+    df = pd.read_csv('train.csv')
+    train = df[0:10392]
+    test = df[10392:]
+    pred = test.copy()
+    fit = SimpleExpSmoothing(np.asarray(train['列名1'])).fit(smoothing_level=0.6, optimized=False)
+    pred['列名2'] = fit.forecast(len(test))  # 需要预测多长
+
+    # 画出来
+    plt.figure(figsize=(16, 8))
+    plt.plot(train['列名1'], label='Train')
+    plt.plot(test['列名1'], label='Test')
+    plt.plot(pred['列名2'], label='列名2')
+    plt.legend(loc='best')
+    plt.show()
+
+    # 评估
+    rms = sqrt(mean_squared_error(test['列名1'], pred))
+    print(rms)
+
+```
+
+## **霍尔特线性趋势法**
+
+- 考虑到数据集变化趋势的方法就叫做霍尔特线性趋势法，任何呈现某种趋势(比如商上升趋势)的数据集都可以用霍尔特线性趋势法用于预测
+
+- 先看看是否呈现某种趋势
+
+  ```python
+  import statsmodels.api as sm sm.tsa.seasonal_decompose(train['xxx']).plot() 
+  result = sm.tsa.stattools.adfuller(train['xxx']) 
+  plt.show()
+  ```
+
+  - 如果是的话就可以使用
+
+- 代码相对上面只需改动这两句，其他适当改即可
+
+```python
+from statsmodels.tsa.api import Holt
+fit = Holt(np.asarray(train['xxx'])).fit(smoothing_level=0.3, smoothing_slope=0.1)
+```
+
+
+
+## Holt-Winters季节性预测模型
+
+- 体现在季节性
+  - 比如一个水果店的销售情况，在夏季收入远高于其他季节
+- 只需改变一点代码,选择了seasonal_period=7作为每周重复数据
+
+```python
+from statsmodels.tsa.api import ExponentialSmoothing
+fit1 = ExponentialSmoothing(np.asarray(train['xxx']), seasonal_periods=7, trend='add', seasonal='add', ).fit()
+```
+
+
+
+##  **自回归移动平均模型（ARIMA）** 
+
+- 指数平滑模型都是基于数据中的趋势和季节性的描述，而自回归移动平均模型的目标是描述数据中彼此之间的关系。ARIMA的一个优化版就是季节性ARIMA。它像Holt-Winters季节性预测模型一样，也把数据集的季节性考虑在内。
+
+```python
+import statsmodels.api as sm
+pred = test.copy() 
+fit1 = sm.tsa.statespace.SARIMAX(train.xxx, order=(2, 1, 4), seasonal_order=(0, 1, 1, 7)).fit() pred['SARIMA']=fit1.predict(start="20xx-xx-xx",end="20xx-xx- xx",dynamic=True)
+```
+
+
+
+# SVM
+
+- 见之前的资料sklearn
+
+```python
+clf = svm.SVC(C=0.8, kernel='rbf', gamma=20, decision_function_shape='ovr')
+clf.fit(x_train, y_train.ravel())
+```
+
+- 调参，参数见资料
+
+- 参考：https://www.bilibili.com/video/BV12h411d7Dm?p=12
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 - 我的更新: https://github.com/JimouChen/python-application/blob/master/PythonLearning/MathematicalModeling/note.md
