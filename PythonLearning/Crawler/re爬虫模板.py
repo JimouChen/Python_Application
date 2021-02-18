@@ -26,6 +26,6 @@ def match_text(html_text):
 
 url = ''
 html_text = get_html_text(url)
+print(html_text)
 massage = match_text(html_text)
-
 print(massage)
