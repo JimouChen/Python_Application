@@ -1,3 +1,4 @@
+# 插入排序
 def insertSort(array: list):
     for i in range(1, len(array)):
         if array[i] < array[i - 1]:
