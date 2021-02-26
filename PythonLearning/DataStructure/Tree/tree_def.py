@@ -48,6 +48,20 @@ def postOrder(t: TreeNode):
         print(t.val, end=' ')
 
 
+# 获取叶子节点
+leavesNode = []
+
+
+def getLeaveNode(t: TreeNode):
+    if not t.left and not t.right:
+        leavesNode.append(t.val)
+        return
+    if t.left:
+        getLeaveNode(t.left)
+    if t.right:
+        getLeaveNode(t.right)
+
+
 if __name__ == '__main__':
     tree = TreeNode()
     tree = createTree(tree)
@@ -56,7 +70,9 @@ if __name__ == '__main__':
     inOrder(tree)
     print()
     postOrder(tree)
-    print('\nover!')
+    print('\n over!')
+    getLeaveNode(tree)
+    print(leavesNode)
 
 '''
 a
